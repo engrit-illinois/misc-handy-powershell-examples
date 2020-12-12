@@ -75,7 +75,7 @@ $ous | Select Name,DistinguishedName
 
 # Reset EWS guest accounts:
 # This has been made into a proper script here:
-# https://gitlab.engr.illinois.edu/oesr/official_engrit_script_repo/-/tree/master/Recycle-EWSGuestAccounts
+# https://github.com/engrit-illinois/Recycle-EWSGuestAccounts
 
 # -----------------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ systeminfo /s $_ | findstr "Host Time:"
 
 # Get boot and shutdown history for a computer:
 # This has been turned into a proper script here:
-# https://gitlab.engr.illinois.edu/oesr/official_engrit_script_repo/-/tree/master/Get-UptimeHistory
+# https://github.com/engrit-illinois/Get-UptimeHistory
 
 # https://serverfault.com/questions/702828/windows-server-restart-shutdown-history
 # https://www.whatsupgold.com/blog/how-to-find-restart-info-for-machines-on-your-network-using-powershell-and-windows-event-logs
@@ -252,7 +252,7 @@ $prefixesFinal | Sort-Object
 
 # Force the MECM client to re-evaluate its assignments
 # Useful if deployments just won't show up in Software Center
-# https://gitlab.engr.illinois.edu/oesr/official_engrit_script_repo/tree/master/force-software-center-assignment-evaluation
+# https://github.com/engrit-illinois/force-software-center-assignment-evaluation
 $Assignments = (Get-WmiObject -Namespace root\ccm\Policy\Machine -Query "Select * FROM CCM_ApplicationCIAssignment").AssignmentID
 ForEach ($Assignment in $Assignments) {
     $Trigger = [wmiclass] "\root\ccm:SMS_Client"
