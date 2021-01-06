@@ -6,6 +6,28 @@ Exit
 
 # -----------------------------------------------------------------------------
 
+# Do something on multiple computers remotely
+$comps = Get-ADComputer -Filter { Name -like "gelib-4c-*" }
+foreach($comp in $comps.Name) {
+    Write-Host "Processing $comp..."
+    Invoke-Command -ComputerName $comp -ScriptBlock {
+        # Do stuff here
+    }    
+}
+
+# -----------------------------------------------------------------------------
+
+# Create a new shortcut
+$pathLNK = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Protege.lnk"
+$pathTarget = "C:\Program Files\Protege.exe"
+
+$shell = New-Object -ComObject WScript.Shell
+$shortcut = $shell.CreateShortcut($pathLNK)
+$shortcut.TargetPath = $pathTarget
+$shortcut.Save()
+
+# -----------------------------------------------------------------------------
+
 # Create large dummy files
 # https://www.windows-commandline.com/how-to-create-large-dummy-file/
 Invoke-Command -ComputerName "computer-name" -ScriptBlock { fsutil file createnew c:\bigtestfile.txt 100000000000 } #100GB
