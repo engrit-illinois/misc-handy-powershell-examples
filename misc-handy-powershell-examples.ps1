@@ -214,7 +214,9 @@ foreach($user in $users) {
 
 # -----------------------------------------------------------------------------
 
-# Find and count all members of AD groups for a given class:
+# Find and count all members of Engineering AD groups for a given class:
+# These are named like "<unit>-<course>-stu", "<unit>-<course>-stf", "<unit>-<course>-grd", "<unit>-<course>-ext", etc.
+# e.g. "ae-100-stu"
 $class = "ae-100*"
 function logMembers($name, $members) {
     Write-Output "$name ($(@($members).count) members):"
@@ -233,6 +235,22 @@ foreach($group in $groups) {
 logMembers "Total" @($all)
 $unique = $all | Select -Unique
 logMembers "Unique" @($unique)
+
+# -----------------------------------------------------------------------------
+
+# Find and count all members of campus Banner AD groups for a given class:
+# These groups are named like "<course number> <section> <year> <semester> <CRN>", where "<course number>" is "<unit> <num>"
+# e.g. "CS 125 AL2 2020 Fall CRN35878"
+$class = "*cs 125*2020 spring*"
+$grouplist = New-Object System.Collections.ArrayList
+$groupA = (Get-ADGroup -Filter { Name -like $class })
+foreach($subgroupA in $groupA) {
+    $grouplist.Add($subgroupA.Name) > $null
+}
+foreach ($group in $grouplist) {
+    $grouptotal += Get-ADGroupMember $group -Recursive | where {$_.objectclass -eq 'user'}
+}
+Write-Output "Total: $(($grouptotal.samaccountname | Select -Unique).count)"
 
 # -----------------------------------------------------------------------------
 
