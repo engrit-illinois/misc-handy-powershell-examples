@@ -414,3 +414,11 @@ Get-Content (Get-PSReadlineOption).HistorySavePath | ? { $_ -like '*adobe*' }
 
 # -----------------------------------------------------------------------------
 
+# Find the MSI product code for an application
+# https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup
+# This can take a while to run
+$apps = get-wmiobject Win32_Product
+$apps | Select Name,IdentifyingNumber | Sort Name
+
+# -----------------------------------------------------------------------------
+
