@@ -272,3 +272,30 @@ $apps | Select Name,IdentifyingNumber | Sort Name
 
 # -----------------------------------------------------------------------------
 
+# Handy log function
+$Log = "c:\engrit\logs\test.log"
+function log {
+	param(
+		[string]$msg = "",
+		[switch]$NoTS,
+		[switch]$NoLog
+	)
+	
+	# Create log file (and "c:\engrit\logs" path) if they don't exist
+	if(!(Test-Path -PathType leaf -Path $Log)) {
+		New-Item -ItemType File -Force -Path $Log | Out-Null
+	}
+	
+	# Add timestamp, unless requested otherwise
+	if(!$NoTS) {
+		$ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss:ffff"
+		$msg = "[$ts] $msg"
+	}
+	
+	# Output message to console and log file
+	Write-Host $msg
+	if(!$NoLog) { $msg | Out-File $Log -Append }
+}
+
+# -----------------------------------------------------------------------------
+
