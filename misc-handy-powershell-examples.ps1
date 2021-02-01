@@ -274,13 +274,18 @@ $apps | Select Name,IdentifyingNumber | Sort Name
 
 # Handy, feature-rich log function by mseng3
 
-# For modules, you can make these into parameters:
-$ConsoleOutput = $true
-$Log = $true
-$LogPath = "c:\engrit\logs\test.log"
-$Indent = "    "
-$Verbosity = 0
-$LogTimestampFormat = "yyyy-MM-dd HH:mm:ss:ffff"
+# If you're making a module, you can use this, otherwise you can take them out of the param() and just make them global variables.
+param(
+	# Uncomment one of these depending on whether output goes to the console by default or not, such that the user can override the default
+	#[switch]$ConsoleOutput,
+	[switch]$NoConsoleOutput,
+	[switch]$Log,
+	[string]$LogPath = "c:\engrit\logs\logname_$(Get-Date -Format `"yyyy-MM-dd_HH-mm-ss`").log",
+	[string]$Indent = "    ",
+	[int]$Verbosity = 0,
+	#[string]$LogTimestampFormat = "yyyy-MM-dd HH:mm:ss:ffff"
+	[string]$LogTimestampFormat = "HH:mm:ss"
+)
 
 function log {
 	param (
@@ -315,7 +320,9 @@ function log {
 		if(!$NoConsole) {
 
 			# If we're allowing console output, then Write-Host
-			if($ConsoleOutput) {
+			# Uncomment one of these depending on whether output goes to the console by default or not, such that the user can override the default
+			#if($ConsoleOutput) {
+			if(!$NoConsoleOutput)
 				if($NoNL) {
 					Write-Host $Msg -NoNewline
 				}
