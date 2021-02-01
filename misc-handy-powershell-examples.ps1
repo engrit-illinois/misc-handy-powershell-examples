@@ -279,10 +279,12 @@ param(
 	# Uncomment one of these depending on whether output goes to the console by default or not, such that the user can override the default
 	#[switch]$ConsoleOutput,
 	[switch]$NoConsoleOutput,
+	
 	[switch]$Log,
 	[string]$LogPath = "c:\engrit\logs\logname_$(Get-Date -Format `"yyyy-MM-dd_HH-mm-ss`").log",
 	[string]$Indent = "    ",
 	[int]$Verbosity = 0,
+	
 	#[string]$LogTimestampFormat = "yyyy-MM-dd HH:mm:ss:ffff"
 	[string]$LogTimestampFormat = "HH:mm:ss"
 )
@@ -319,10 +321,11 @@ function log {
 		# Check if this particular message is supposed to be output to console
 		if(!$NoConsole) {
 
-			# If we're allowing console output, then Write-Host
 			# Uncomment one of these depending on whether output goes to the console by default or not, such that the user can override the default
 			#if($ConsoleOutput) {
 			if(!$NoConsoleOutput)
+			
+				# If we're allowing console output, then Write-Host
 				if($NoNL) {
 					Write-Host $Msg -NoNewline
 				}
@@ -335,9 +338,9 @@ function log {
 		# Check if this particular message is supposed to be logged
 		if(!$NoLog) {
 
-			# If we're allowing logging, then log
 			if($Log) {
-
+				# If we're allowing logging, then log to file
+				
 				# Check that the logfile already exists, and if not, then create it (and the full directory path that should contain it)
 				if(!(Test-Path -PathType leaf -Path $LogPath)) {
 					New-Item -ItemType File -Force -Path $LogPath | Out-Null
