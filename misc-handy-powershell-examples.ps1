@@ -277,7 +277,7 @@ $apps | Select Name,IdentifyingNumber | Sort Name
 # For modules, you can make these into parameters:
 $ConsoleOutput = $true
 $Log = $true
-$LogFile = "c:\engrit\logs\test.log"
+$LogPath = "c:\engrit\logs\test.log"
 $Indent = "    "
 $Verbosity = 0
 $LogTimestampFormat = "yyyy-MM-dd HH:mm:ss:ffff"
