@@ -272,29 +272,79 @@ $apps | Select Name,IdentifyingNumber | Sort Name
 
 # -----------------------------------------------------------------------------
 
-# Handy log function
-$Log = "c:\engrit\logs\test.log"
+# Handy, feature-rich log function by mseng3
+
+# For modules, you can make these into parameters:
+$ConsoleOutput = $true
+$Log = $true
+$LogFile = "c:\engrit\logs\test.log"
+$Indent = "    "
+$Verbosity = 0
+$LogTimestampFormat = "yyyy-MM-dd HH:mm:ss:ffff"
+
 function log {
-	param(
-		[string]$msg = "",
-		[switch]$NoTS,
-		[switch]$NoLog
+	param (
+		[Parameter(Position=0)]
+		[string]$Msg = "",
+
+		[int]$L = 0, # level of indentation
+		[int]$V = 0, # verbosity level
+		[switch]$NoTS, # omit timestamp
+		[switch]$NoNL, # omit newline after output
+		[switch]$NoConsole, # skip outputting to console
+		[switch]$NoLog # skip logging to file
 	)
 	
-	# Create log file (and "c:\engrit\logs" path) if they don't exist
-	if(!(Test-Path -PathType leaf -Path $Log)) {
-		New-Item -ItemType File -Force -Path $Log | Out-Null
+	# Custom indent per message, good for making output much more readable
+	for($i = 0; $i -lt $L; $i += 1) {
+		$Msg = "$Indent$Msg"
 	}
 	
-	# Add timestamp, unless requested otherwise
+	# Add timestamp to each message
+	# $NoTS parameter useful for making things like tables look cleaner
 	if(!$NoTS) {
-		$ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss:ffff"
-		$msg = "[$ts] $msg"
+		$ts = Get-Date -Format $LogTimestampFormat
+		$Msg = "[$ts] $Msg"
 	}
+
+	# Each message can be given a custom verbosity ($V), and so can be displayed or ignored depending on $Verbosity
+	# Check if this particular message is too verbose for the given $Verbosity level
+	if($V -le $Verbosity) {
 	
-	# Output message to console and log file
-	Write-Host $msg
-	if(!$NoLog) { $msg | Out-File $Log -Append }
+		# Check if this particular message is supposed to be output to console
+		if(!$NoConsole) {
+
+			# If we're allowing console output, then Write-Host
+			if($ConsoleOutput) {
+				if($NoNL) {
+					Write-Host $Msg -NoNewline
+				}
+				else {
+					Write-Host $Msg
+				}
+			}
+		}
+
+		# Check if this particular message is supposed to be logged
+		if(!$NoLog) {
+
+			# If we're allowing logging, then log
+			if($Log) {
+
+				# Check that the logfile already exists, and if not, then create it (and the full directory path that should contain it)
+				if(!(Test-Path -PathType leaf -Path $LogPath)) {
+					New-Item -ItemType File -Force -Path $LogPath | Out-Null
+				}
+
+				if($NoNL) {
+					$Msg | Out-File $LogPath -Append -NoNewline
+				}
+				else {
+					$Msg | Out-File $LogPath -Append
+				}
+			}
+		}
+	}
 }
 
 # -----------------------------------------------------------------------------
