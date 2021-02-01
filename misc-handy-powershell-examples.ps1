@@ -349,3 +349,34 @@ function log {
 
 # -----------------------------------------------------------------------------
 
+# Handy function for logging just the useful bits of error records in a readable format
+# Designed for use with above log() function
+# https://docs.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-exceptions?view=powershell-7.1
+
+function Log-Error($e, $L) {
+	log "$($e.Exception.Message)" -L $l
+	log "$($e.InvocationInfo.PositionMessage.Split("`n")[0])" -L ($L + 1)
+}
+
+try {
+	[System.IO.File]::ReadAllText( '\\test\no\filefound.log')
+}
+catch {
+	log "Custom message explaining what happened in English" -L 1
+	Log-Error $_ 2
+}
+
+# -----------------------------------------------------------------------------
+
+# Outputting ENTIRE error records in a readable format
+# https://stackoverflow.com/a/57548069/994622
+
+try {
+	[System.IO.File]::ReadAllText( '\\test\no\filefound.log')
+}
+catch {
+	Write-Host ($_ | ConvertTo-Json)
+}
+
+# -----------------------------------------------------------------------------
+
