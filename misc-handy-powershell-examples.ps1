@@ -311,7 +311,7 @@ function log {
 	# Add timestamp to each message
 	# $NoTS parameter useful for making things like tables look cleaner
 	if(!$NoTS) {
-		if($ts) {
+		if($LogTimestampFormat) {
 			$ts = Get-Date -Format $LogTimestampFormat
 		}
 		$Msg = "$ts$Msg"
