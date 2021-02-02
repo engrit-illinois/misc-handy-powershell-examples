@@ -285,8 +285,9 @@ param(
 	[string]$Indent = "    ",
 	[int]$Verbosity = 0,
 	
-	#[string]$LogTimestampFormat = "yyyy-MM-dd HH:mm:ss:ffff"
-	[string]$LogTimestampFormat = "HH:mm:ss"
+	#[string]$LogTimestampFormat = "[yyyy-MM-dd HH:mm:ss:ffff] "
+	[string]$LogTimestampFormat = "[HH:mm:ss] "
+	#[string]$LogTimestampFormat = ""
 )
 
 function log {
@@ -311,7 +312,7 @@ function log {
 	# $NoTS parameter useful for making things like tables look cleaner
 	if(!$NoTS) {
 		$ts = Get-Date -Format $LogTimestampFormat
-		$Msg = "[$ts] $Msg"
+		$Msg = "$ts$Msg"
 	}
 
 	# Each message can be given a custom verbosity ($V), and so can be displayed or ignored depending on $Verbosity
