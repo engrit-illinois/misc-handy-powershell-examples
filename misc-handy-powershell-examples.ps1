@@ -394,7 +394,10 @@ catch {
 # -----------------------------------------------------------------------------
 
 # Send a pop up dialog with a custom message and an "OK" button, to logged in users of a remote computer:
-Invoke-Command -ComputerName "eh-406b1-01" -ScriptBlock { msg * /v "Test message" }
+Invoke-Command -ComputerName "computer-name" -ScriptBlock { msg * /v "Test message" }
+
+# or just
+msg * /v /server:"computer-name" "Test message"
 
 # -----------------------------------------------------------------------------
 
