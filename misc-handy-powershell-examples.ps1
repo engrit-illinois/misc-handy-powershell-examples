@@ -381,6 +381,17 @@ catch {
 
 # -----------------------------------------------------------------------------
 
+# Handy function for logging whole objects as lists, while still preserving custom indentation
+# Designed for use with above log() function
+function Log-ObjectList($object) {
+	$string = ($object | Format-List | Out-String)
+	$string = $string.Replace("`n", "`n$Indent").Trim()
+	$string = "$Indent$string"
+	log $string
+}
+
+# -----------------------------------------------------------------------------
+
 # Outputting ENTIRE error records in a readable format
 # https://stackoverflow.com/a/57548069/994622
 
