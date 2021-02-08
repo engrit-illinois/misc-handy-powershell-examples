@@ -412,3 +412,8 @@ msg * /v /server:"computer-name" "Test message"
 
 # -----------------------------------------------------------------------------
 
+# Find AD objects with a given string in their description field:
+Get-ADComputer -Filter { Description -Like "*query*" } -Properties Description | Select Name,Description
+
+# -----------------------------------------------------------------------------
+
