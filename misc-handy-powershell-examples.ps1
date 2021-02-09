@@ -299,9 +299,9 @@ function log {
 		[int]$V = 0, # verbosity level
 		
 		[ValidateSet([System.Enum]::GetValues([System.ConsoleColor]))]
-		[string]$FC, # foreground color
+		[string]$FC = (get-host).ui.rawui.ForegroundColor, # foreground color
 		[ValidateSet([System.Enum]::GetValues([System.ConsoleColor]))]
-		[string]$BC, # background color
+		[string]$BC = (get-host).ui.rawui.BackgroundColor, # background color
 		
 		[switch]$NoTS, # omit timestamp
 		[switch]$NoNL, # omit newline after output
@@ -336,10 +336,10 @@ function log {
 			
 				# If we're allowing console output, then Write-Host
 				if($NoNL) {
-					Write-Host $Msg -NoNewline
+					Write-Host $Msg -NoNewline -ForegroundColor $FC -BackgroundColor $BC
 				}
 				else {
-					Write-Host $Msg
+					Write-Host $Msg -ForegroundColor $FC -BackgroundColor $BC
 				}
 			}
 		}
