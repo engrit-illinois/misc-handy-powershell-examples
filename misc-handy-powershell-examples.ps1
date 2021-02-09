@@ -298,9 +298,9 @@ function log {
 		[int]$L = 0, # level of indentation
 		[int]$V = 0, # verbosity level
 		
-		[ValidateSet([System.Enum]::GetValues([System.ConsoleColor]))]
+		[ValidateScript({[System.Enum]::GetValues([System.ConsoleColor]) -contains $_})]
 		[string]$FC = (get-host).ui.rawui.ForegroundColor, # foreground color
-		[ValidateSet([System.Enum]::GetValues([System.ConsoleColor]))]
+		[ValidateScript({[System.Enum]::GetValues([System.ConsoleColor]) -contains $_})]
 		[string]$BC = (get-host).ui.rawui.BackgroundColor, # background color
 		
 		[switch]$NoTS, # omit timestamp
