@@ -297,6 +297,12 @@ function log {
 
 		[int]$L = 0, # level of indentation
 		[int]$V = 0, # verbosity level
+		
+		[ValidateSet([System.Enum]::GetValues([System.ConsoleColor]))]
+		[string]$FC, # foreground color
+		[ValidateSet([System.Enum]::GetValues([System.ConsoleColor]))]
+		[string]$BC, # background color
+		
 		[switch]$NoTS, # omit timestamp
 		[switch]$NoNL, # omit newline after output
 		[switch]$NoConsole, # skip outputting to console
