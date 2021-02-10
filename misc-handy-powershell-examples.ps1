@@ -426,3 +426,23 @@ Get-ADComputer -Filter { Description -Like "*query*" } -Properties Description |
 
 # -----------------------------------------------------------------------------
 
+# Speak a given message
+# Note: only seems to work in an interactive session
+# i.e., can't be used for its intended purpose of pranking fellow IT pros :'(
+
+# Windows 10 Text-to-Speech Example
+# https://www.get-itguy.com/2020/01/run-scripts-with-parameters-in-memcm.html
+
+$msg = "This is a test message."
+
+# Call up your speech assembly
+Add-Type -AssemblyName System.Speech
+$speaker = New-Object System.Speech.Synthesis.SpeechSynthesizer
+
+#$speaker.SelectVoice("Microsoft Zira Desktop")
+$speaker.SelectVoice("Microsoft David Desktop")
+$speaker.Volume = 100
+$speaker.Speak($Message)
+$speaker.Dispose()
+
+# -----------------------------------------------------------------------------
