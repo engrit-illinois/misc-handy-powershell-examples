@@ -452,16 +452,16 @@ $speaker.Dispose()
 
 # Define wildcard queries to target desired credentials
 $targets = @(
-    "*mseng3*",
-    "*illinois.edu*",
-    "*uofi*",
-    "*engrit*",
-    "*gelib-idea*",
-    "*ews*",
-    "*office365*",
-    "*MicrosoftOffice*",
-    "*msteams*",
-    "*OneDrive*"
+	"*illinois.edu*",
+	"*uofi*",
+	"*office365*",
+	"*MicrosoftOffice*",
+	"*msteams*",
+	"*OneDrive*",
+	"*engrit*",
+	"*gelib-idea*",
+	"*ews*",
+	"*mseng3*"
 )
 
 # Get all credential items
@@ -470,22 +470,22 @@ $items = cmdkey /list | Where { $_ -like "*Target:*" }
 # Get all credential items which match queries
 $targetItems = @()
 foreach($item in $items) {
-    foreach($target in $targets) {
-        if($item -like $target) {
-            $targetItems += $item
-        }
-    }
+	foreach($target in $targets) {
+		if($item -like $target) {
+			$targetItems += $item
+		}
+	}
 }
 
 # For each matching item
 foreach($item in $targetItems) {
-    $item = $item.Replace("Target:","")
-    $item = $item.Replace("LegacyGeneric:","")
-    $item = $item.Replace("Domain:","")
-    $item = $item.Replace("target=","")
-    $item = $item.Trim()
-    Write-Host $item
-    cmdkey /del:$item
+	$item = $item.Replace("Target:","")
+	$item = $item.Replace("LegacyGeneric:","")
+	$item = $item.Replace("Domain:","")
+	$item = $item.Replace("target=","")
+	$item = $item.Trim()
+	Write-Host $item
+	cmdkey /del:$item
 }
 
 # -----------------------------------------------------------------------------
