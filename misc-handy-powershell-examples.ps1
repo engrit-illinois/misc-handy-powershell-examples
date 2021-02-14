@@ -445,3 +445,35 @@ $speaker.Dispose()
 
 # -----------------------------------------------------------------------------
 
+# Remove all stored credentials from Credential Manager relating to the university
+# Useful to clear out credentials when you've changed your NetID password
+
+# Define wildcard queries to target desired credentials
+$targets = @(
+	"*illinois.edu*",
+	"*uofi*"
+)
+
+# Get all credential items
+$items = cmdkey /list | Where { $_ -like "*Target:*" }
+
+# Get all credential items which match queries
+$targetItems = @()
+foreach($item in $items) {
+	foreach($target in $targets) {
+		if($item -like $target) {
+			$targetItems += $item
+		}
+	}
+}
+
+# For each matching item
+foreach($item in $targetItems) {
+	$item = $item.Replace(" ","")
+	$item = $item.Replace("Target:","")
+	Write-Host $item
+	#cmdkey /del:$target
+}
+
+# -----------------------------------------------------------------------------
+
