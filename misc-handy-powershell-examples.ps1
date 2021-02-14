@@ -205,47 +205,7 @@ https://github.com/engrit-illinois/org-shared-mecm-deployments/blob/master/org-s
 # -----------------------------------------------------------------------------
 
 # Gather some stats about an EWS homedir
-function global:Poke-HomeDir {
-	param(
-		[string]$user,
-		[switch]$debug
-	)
-	$largestCount = 10
-	
-	function log($msg) {
-		if($debug) {
-			if($loud) { Write-Host $msg }
-		}
-		else { Write-Host $msg }
-	}
-	
-	log "Getting path..." -debug
-	$homes = @("1abc","2defgh","3ijkl","4mnop","5qrs","6tuvwxyz")
-	$homeNum = ($homes | Where { $_ -like "*$($user.substring(0,1))*" }).substring(0,1)
-	$dir = "\\ews-unity.ad.uillinois.edu\fs$($homeNum)-homes\$user\"
-	log "Path: `"$dir`""
-	
-	log "Getting files..." -debug
-	$files = Get-ChildItem $dir -Force -Recurse -File
-	$fileCount = @($files).count
-	log "File count: $fileCount"
-	
-	log "Getting directories..." -debug
-	$dirs = Get-ChildItem $dir -Force -Recurse -Directory
-	$dirCount = @($dirs).count
-	log "Dir count: $dirCount"
-	
-	log "Calculating total filesize..." -debug
-	$size = [math]::round(($files | Measure-Object -Sum Length).Sum/1MB,1)
-	log "`nTotal size: $size MB"
-	
-	log "Identifying $largestCount largest files..." -debug
-	$largest = $files | Sort "length" -Descending | Select "length","fullname" -First $largestCount | Select @{Name="Length"; Expression={"$([math]::round($_.Length/1MB,1)) MB"}},FullName
-	log "$largestCount largest files:"
-	$largest | Format-Table -Autosize -Wrap
-}
-
-Poke-HomeDir "mseng3"
+# This has been turned into a proper module here: https://github.com/engrit-illinois/Poke-EwsHomeDir
 
 # -----------------------------------------------------------------------------
 
