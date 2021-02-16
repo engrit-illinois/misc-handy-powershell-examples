@@ -451,6 +451,7 @@ foreach($item in $targetItems) {
 # -----------------------------------------------------------------------------
 
 # Get the last logon timestamp for a group of machines:
+# Must be run as your SU account to get the lastLogonTimestamp field data
 # https://stackoverflow.com/questions/13091719/converting-lastlogon-to-datetime-format
 $query = "esb-6104-*"
 Get-ADComputer -Filter "name -like '$query'" -Properties * | Select Name,lastLogonTimestamp,@{Name="lastlogonTimestampDateTime";Expression={[datetime]::FromFileTime($_.lastLogonTimestamp)}}
