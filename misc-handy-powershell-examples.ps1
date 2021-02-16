@@ -450,3 +450,9 @@ foreach($item in $targetItems) {
 
 # -----------------------------------------------------------------------------
 
+# Get the last logon timestamp for a group of machines:
+$query = "esb-6104-*"
+Get-ADComputer -Filter "name -like '$query'" -Properties * | Select Name,lastLogonTimestamp,@{Name="lastlogonTimestampDateTime";Expression={[datetime]::FromFileTime($_.lastLogonTimestamp)}}
+
+# -----------------------------------------------------------------------------
+
