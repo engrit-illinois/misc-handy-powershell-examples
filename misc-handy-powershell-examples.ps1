@@ -458,3 +458,26 @@ Get-ADComputer -Filter "name -like '$query'" -Properties * | Select Name,lastLog
 
 # -----------------------------------------------------------------------------
 
+# Search your Powershell command history for commands sent matching a given string:
+$query = "*something*"
+Get-Content (Get-PSReadlineOption).HistorySavePath | Where { $_ -like $query }
+
+# Or open the file directly
+# C:\Users\username\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+(Get-PSReadlineOption).HistorySavePath
+
+# -----------------------------------------------------------------------------
+
+# Get the InstallDate from a group of machines (to tell when they were imaged):
+$comps = Get-ADComputer -Filter { Name -like "computer-name-*" }
+$data = @()
+foreach($comp in $comps.Name) {
+	Write-Host "Querying $comp..."
+	$compData = Invoke-Command -ComputerName $comp -ScriptBlock {
+		get-ciminstance win32_operatingsystem -OperationTimeoutSec 60
+	}
+	$data += @($compData)
+}
+$data | Select PSComputerName,installdate | Format-Table -AutoSize
+
+# -----------------------------------------------------------------------------
