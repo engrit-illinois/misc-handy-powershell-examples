@@ -459,6 +459,7 @@ Get-ADComputer -Filter "name -like '$query'" -Properties * | Select Name,lastLog
 # -----------------------------------------------------------------------------
 
 # Search your Powershell command history for commands sent matching a given string:
+# https://serverfault.com/a/891268/270130
 $query = "*something*"
 Get-Content (Get-PSReadlineOption).HistorySavePath | Where { $_ -like $query }
 
