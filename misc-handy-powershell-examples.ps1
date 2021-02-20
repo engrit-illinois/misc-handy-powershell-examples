@@ -482,3 +482,21 @@ foreach($comp in $comps.Name) {
 $data | Select PSComputerName,installdate | Format-Table -AutoSize
 
 # -----------------------------------------------------------------------------
+
+# Handy utility function to reliably count members of an array that might be empty
+
+# Because of Powershell's weird way of handling arrays containing null values
+# i.e. null values in arrays still count as items in the array
+function count($array) {
+	$count = 0
+	if($array) {
+		# If we didn't check $array in the above if statement, this would return 1 if $array was $null
+		# i.e. @().count = 0, @($null).count = 1
+		$count = @($array).count
+		# We can't simply do $array.count, because if it's null, that would throw an error due to trying to access a method on a null object
+	}
+	$count
+}
+
+# -----------------------------------------------------------------------------
+
