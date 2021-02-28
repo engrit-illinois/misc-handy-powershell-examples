@@ -336,8 +336,8 @@ function log {
 # https://docs.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-exceptions?view=powershell-7.1
 
 function Log-Error($e, $L) {
-	log "$($e.Exception.Message)" -L $l
-	log "$($e.InvocationInfo.PositionMessage.Split("`n")[0])" -L ($L + 1)
+	log "$($e.Exception.Message)" -L $l -E
+	log "$($e.InvocationInfo.PositionMessage.Split("`n")[0])" -L ($L + 1) -E
 }
 
 try {
