@@ -500,3 +500,30 @@ function count($array) {
 
 # -----------------------------------------------------------------------------
 
+# Get the raw value of an object property without using annoying ($object).property syntax
+# Using the method call syntax to get a count (which is a common task) is annoying because
+# it requires you to backtrack your cursor to add an opening parenthesis, and also
+# more parentheses lead to more complicated, less-readable, error-prone code.
+
+# Usual method:
+$count = (Get-GPO -All | Where { $_.DisplayName -like "ENGR*"}).count
+$count # Outputs an integer
+$count.GetType() # Int32
+
+# Get "Measure" object using only pipeline syntax:
+$count2 = Get-GPO -All | Where { $_.DisplayName -like "ENGR*"} | Measure
+$count2 # Outputs an object
+$count2.GetType() # GenericMeasureInfo
+
+# Get count child object of Measure object using only pipline syntax:
+$count3 = Get-GPO -All | Where { $_.DisplayName -like "ENGR*"} | Measure | Select Count
+$count3 # Outputs an object
+$count3.GetType() # PSCustomObject
+
+# Get raw count value of count child object of Measure object using only pipline syntax:
+$count4 = Get-GPO -All | Where { $_.DisplayName -like "ENGR*"} | Measure | Select -ExpandProperty Count
+$count4 # Outputs an integer
+$count4.GetType() # Int32
+
+# -----------------------------------------------------------------------------
+
