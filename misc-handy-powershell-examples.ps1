@@ -28,6 +28,21 @@ $shortcut.Save()
 
 # -----------------------------------------------------------------------------
 
+# Modify the target field of all existing shortcuts in the current directory
+$lnks = dir "*.lnk"
+$lnks | ForEach-Object {
+    # Create a temporary shortcut object to work with
+    $lnk = (New-Object -ComObject 'WScript.Shell').CreateShortCut($_.FullName)
+    # Modifies the base target file path
+    $lnk.TargetPath = $lnk.TargetPath.Replace("c:\test\","d:\test\")
+    # Modifies the arguments given to the target file
+    $lnk.Arguments = $lnk.Arguments.Replace("-Param1 `"Hello World!`"","Param2 `"Hello.`"")
+    # Apply the changes to the actual shortcut file
+    $lnk.Save()
+}
+
+# -----------------------------------------------------------------------------
+
 # Create large dummy files
 # https://www.windows-commandline.com/how-to-create-large-dummy-file/
 Invoke-Command -ComputerName "computer-name" -ScriptBlock { fsutil file createnew c:\bigtestfile.txt 100000000000 } #100GB
