@@ -34,9 +34,11 @@ $lnks | ForEach-Object {
     # Create a temporary shortcut object to work with
     $lnk = (New-Object -ComObject 'WScript.Shell').CreateShortCut($_.FullName)
     # Modifies the base target file path
-    $lnk.TargetPath = $lnk.TargetPath.Replace("c:\test\","d:\test\")
+    $lnk.TargetPath = $lnk.TargetPath.Replace("appv1.exe","appv2.exe")
     # Modifies the arguments given to the target file
     $lnk.Arguments = $lnk.Arguments.Replace("-Param1 `"Hello World!`"","Param2 `"Hello.`"")
+    # Modifies the "Start in" path
+    $lnk.WorkingDirectory = $lnk.WorkingDirectory.Replace("c:\program files\","d:\test\")
     # Apply the changes to the actual shortcut file
     $lnk.Save()
 }
