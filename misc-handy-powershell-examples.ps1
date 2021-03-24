@@ -367,13 +367,22 @@ catch {
 
 # -----------------------------------------------------------------------------
 
-# Handy function for logging whole objects as lists, while still preserving custom indentation
+# Handy function for logging whole objects, while still preserving custom timestamp and indentation markup
 # Designed for use with above log() function
-function Log-ObjectList($object) {
-	$string = ($object | Format-List | Out-String)
-	$string = $string.Replace("`n", "`n$Indent").Trim()
-	$string = "$Indent$string"
-	log $string
+function Log-Object {
+	param(
+		[PSObject]$Object,
+		[string]$Format = "Table"
+	)
+	switch($Format) {
+		"List" { $string = ($object | Format-List | Out-String) }
+		Default { $string = ($object | Format-Table -AutoSize | Out-String) }
+	}
+	$string = $string.Trim()
+	$lines = $string.Split("`n")
+	foreach($line in $lines) {
+		log $line -L 1
+	}
 }
 
 # -----------------------------------------------------------------------------
