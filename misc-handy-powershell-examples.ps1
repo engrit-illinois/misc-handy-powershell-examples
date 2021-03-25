@@ -372,16 +372,18 @@ catch {
 function Log-Object {
 	param(
 		[PSObject]$Object,
-		[string]$Format = "Table"
+		[string]$Format = "Table",
+		[int]$L = 0
 	)
 	switch($Format) {
 		"List" { $string = ($object | Format-List | Out-String) }
-		Default { $string = ($object | Format-Table -AutoSize | Out-String) }
+		#Default { $string = ($object | Format-Table -AutoSize | Out-String) }
+		Default { $string = ($object | Format-Table | Out-String) }
 	}
 	$string = $string.Trim()
 	$lines = $string.Split("`n")
 	foreach($line in $lines) {
-		log $line -L 1
+		log $line -L $L
 	}
 }
 
