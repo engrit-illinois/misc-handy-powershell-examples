@@ -381,7 +381,7 @@ function Log-Object {
 		Default { $string = ($object | Format-Table | Out-String) }
 	}
 	$string = $string.Trim()
-	$lines = $string.Split("`n")
+	$lines = $string -split "`n"
 	foreach($line in $lines) {
 		log $line -L $L
 	}
