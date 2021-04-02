@@ -251,22 +251,38 @@ $apps | Select Name,IdentifyingNumber | Sort Name
 
 # Handy, feature-rich log function by mseng3
 
-# If you're making a module, you can use this, otherwise you can take them out of the param() and just make them global variables.
+# Logging parameters
+# If you're making a module, you can use this param block, otherwise you can take them out of the param() and just make them global variables.
 param(
-	# Uncomment one of these depending on whether output goes to the console by default or not, such that the user can override the default
-	#[switch]$ConsoleOutput,
+	# ":ENGRIT:" will be replaced with "c:\engrit\logs\$($MODULE_NAME)_:TS:.log"
+	# ":TS:" will be replaced with start timestamp
+	[string]$Log,
+
 	[switch]$NoConsoleOutput,
-	
-	[switch]$Log,
-	[string]$LogPath = "c:\engrit\logs\logname_$(Get-Date -Format `"yyyy-MM-dd_HH-mm-ss`").log",
 	[string]$Indent = "    ",
-	[int]$Verbosity = 0,
-	
-	#[string]$LogTimestampFormat = "[yyyy-MM-dd HH:mm:ss:ffff] "
-	[string]$LogTimestampFormat = "[HH:mm:ss] "
-	#[string]$LogTimestampFormat = $null # For no timestamp
+	[string]$LogFileTimestampFormat = "yyyy-MM-dd_HH-mm-ss",
+	[string]$LogLineTimestampFormat = "[HH:mm:ss] ", # Minimal timestamp
+	#[string]$LogLineTimestampFormat = "[yyyy-MM-dd HH:mm:ss:ffff] ", # Full timestamp
+	#[string]$LogLineTimestampFormat = $null, # No timestamp
+	[int]$Verbosity = 0
 )
 
+# Logic to determine final filename
+$MODULE_NAME = "Module-Name"
+$ENGRIT_LOG_DIR = "c:\engrit\logs"
+$ENGRIT_LOG_FILENAME = "$($MODULE_NAME)_:TS:"
+$START_TIMESTAMP = Get-Date -Format $LogFileTimestampFormat
+
+if($Log) {
+	$Log = $Log.Replace(":ENGRIT:","$($ENGRIT_LOG_DIR)\$($ENGRIT_LOG_FILENAME).log")
+	$Log = $Log.Replace(":TS:",$START_TIMESTAMP)
+}
+if($Csv) {
+	$Csv = $Csv.Replace(":ENGRIT:","$($ENGRIT_LOG_DIR)\$($ENGRIT_LOG_FILENAME).csv")
+	$Csv = $Csv.Replace(":TS:",$START_TIMESTAMP)
+}
+
+# Actual log function
 function log {
 	param (
 		[Parameter(Position=0)]
@@ -274,31 +290,31 @@ function log {
 
 		[int]$L = 0, # level of indentation
 		[int]$V = 0, # verbosity level
-		
+
 		[ValidateScript({[System.Enum]::GetValues([System.ConsoleColor]) -contains $_})]
 		[string]$FC = (get-host).ui.rawui.ForegroundColor, # foreground color
 		[ValidateScript({[System.Enum]::GetValues([System.ConsoleColor]) -contains $_})]
 		[string]$BC = (get-host).ui.rawui.BackgroundColor, # background color
-		
+
 		[switch]$E, # error
 		[switch]$NoTS, # omit timestamp
 		[switch]$NoNL, # omit newline after output
 		[switch]$NoConsole, # skip outputting to console
 		[switch]$NoLog # skip logging to file
 	)
-		
+
 	if($E) { $FC = "Red" }
-	
+
 	# Custom indent per message, good for making output much more readable
 	for($i = 0; $i -lt $L; $i += 1) {
 		$Msg = "$Indent$Msg"
 	}
-	
+
 	# Add timestamp to each message
 	# $NoTS parameter useful for making things like tables look cleaner
 	if(!$NoTS) {
-		if($LogTimestampFormat) {
-			$ts = Get-Date -Format $LogTimestampFormat
+		if($LogLineTimestampFormat) {
+			$ts = Get-Date -Format $LogLineTimestampFormat
 		}
 		$Msg = "$ts$Msg"
 	}
@@ -306,15 +322,13 @@ function log {
 	# Each message can be given a custom verbosity ($V), and so can be displayed or ignored depending on $Verbosity
 	# Check if this particular message is too verbose for the given $Verbosity level
 	if($V -le $Verbosity) {
-	
+
 		# Check if this particular message is supposed to be output to console
 		if(!$NoConsole) {
 
-			# Uncomment one of these depending on whether output goes to the console by default or not, such that the user can override the default
-			#if($ConsoleOutput) {
+			# Check if we're allowing console output
 			if(!$NoConsoleOutput) {
-			
-				# If we're allowing console output, then Write-Host
+
 				if($NoNL) {
 					Write-Host $Msg -NoNewline -ForegroundColor $FC -BackgroundColor $BC
 				}
@@ -327,19 +341,20 @@ function log {
 		# Check if this particular message is supposed to be logged
 		if(!$NoLog) {
 
+			# Check if we're allowing logging
 			if($Log) {
-				# If we're allowing logging, then log to file
-				
+
 				# Check that the logfile already exists, and if not, then create it (and the full directory path that should contain it)
-				if(!(Test-Path -PathType leaf -Path $LogPath)) {
-					New-Item -ItemType File -Force -Path $LogPath | Out-Null
+				if(!(Test-Path -PathType "Leaf" -Path $Log)) {
+					New-Item -ItemType "File" -Force -Path $Log | Out-Null
+					log "Logging to `"$Log`"."
 				}
 
 				if($NoNL) {
-					$Msg | Out-File $LogPath -Append -NoNewline
+					$Msg | Out-File $Log -Append -NoNewline
 				}
 				else {
-					$Msg | Out-File $LogPath -Append
+					$Msg | Out-File $Log -Append
 				}
 			}
 		}
