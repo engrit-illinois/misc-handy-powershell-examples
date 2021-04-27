@@ -390,20 +390,34 @@ function Log-Object {
 	param(
 		[PSObject]$Object,
 		[string]$Format = "Table",
-		[int]$L = 0
+		[int]$L = 0,
+		[int]$V = 0,
+		[switch]$NoTs,
+		[switch]$E
 	)
+	if(!$NoTs) { $NoTs = $false }
+	if(!$E) { $E = $false }
+
 	switch($Format) {
 		"List" { $string = ($object | Format-List | Out-String) }
 		#Default { $string = ($object | Format-Table -AutoSize | Out-String) }
-		Default { $string = ($object | Format-Table | Out-String) }
+		Default { $string = ($object | Format-Table -AutoSize | Out-String) }
 	}
 	$string = $string.Trim()
 	$lines = $string -split "`n"
+
+	$params = @{
+		L = $L
+		V = $V
+		NoTs = $NoTs
+		E = $E
+	}
+
 	foreach($line in $lines) {
-		log $line -L $L
+		$params["Msg"] = $line
+		log @params
 	}
 }
-
 # -----------------------------------------------------------------------------
 
 # Outputting ENTIRE error records in a readable format
