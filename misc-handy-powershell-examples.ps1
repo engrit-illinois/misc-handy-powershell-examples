@@ -345,7 +345,7 @@ function log {
 			if($Log) {
 
 				# Check that the logfile already exists, and if not, then create it (and the full directory path that should contain it)
-				if(!(Test-Path -PathType "Leaf" -Path $Log)) {
+				if(-not (Test-Path -PathType "Leaf" -Path $Log)) {
 					New-Item -ItemType "File" -Force -Path $Log | Out-Null
 					log "Logging to `"$Log`"."
 				}
