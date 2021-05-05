@@ -586,3 +586,39 @@ $count4.GetType() # Int32
 
 # -----------------------------------------------------------------------------
 
+# Extract icon from an EXE
+
+# Define paths
+$filePath = "c:\windows\system32\WindowsPowerShell\v1.0\powershell.exe"
+$iconPath = "c:\engrit\posh-icon.ico"
+
+# Get icon data from EXE
+$file = Get-Item -Path $filePath
+Add-Type -AssemblyName System.Drawing
+$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($file.FullName)
+
+# Get BMP from icon data
+$bmp = $icon.ToBitmap()
+# Get BMP from existing BMP file instead
+#$bmpPath = "c:\engrit\posh-icon.bmp"
+#$bmp = [System.Drawing.Bitmap]::FromFile($bmpPath)
+
+# Save as ICO
+$bmp.Save($iconPath,"icon")
+
+# Sources
+# https://jdhitsolutions.com/blog/powershell/7931/extracting-icons-with-powershell/
+# https://community.spiceworks.com/topic/592770-extract-icon-from-exe-powershell
+# https://docs.microsoft.com/en-us/dotnet/api/system.drawing.icon.extractassociatedicon?view=net-5.0
+# https://docs.microsoft.com/en-us/dotnet/api/system.drawing.icon?view=net-5.0
+# https://community.idera.com/database-tools/powershell/powertips/b/tips/posts/converting-bitmaps-to-icons
+
+# -----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
