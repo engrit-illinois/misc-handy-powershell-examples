@@ -668,8 +668,18 @@ Get-LensData -DataType "subnet" -Query "subnet=130.126.253.64/26"
 
 # -----------------------------------------------------------------------------
 
+# Export a variable from one Powershell session and import to another
+# Useful for grabbing data in a powershell session running as one user and processing it in a session running as another user.
+# e.g. Grab data from MECM as normal account, and process it as SU account, which doesn't have MECM permissions
+# https://stackoverflow.com/questions/56637777/how-to-pass-powershell-variable-from-one-session-to-another-or-from-one-stage-to
 
+# In normal user session
+$compsNoDescMecm = Get-CMCollectionMember -CollectionName "UIUC-ENGR-Has no AD description (IS)"
+$compsNoDescMecm | export-clixml -path c:\mseng3-ctemp\temp-psvar.xml
 
+# In SU user session
+$compsNoDescMecm = import-clixml -path C:\mseng3-ctemp\temp-psvar.xml
 
+# -----------------------------------------------------------------------------
 
 
