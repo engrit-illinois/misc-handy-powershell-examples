@@ -89,9 +89,8 @@ Import-Module "~/temp/powershell scripts/Test-ConnectionAsync.ps1m"
 # -----------------------------------------------------------------------------
 
 # Find GPO named like...
-$query = "engr ews*license*"
-$gpos = Get-GPO -All -Domain "ad.uillinois.edu" | Where { $_.DisplayName -like $query }
-$gpos | Select DisplayName,Id
+$gpos = Get-GPO -All -Domain "ad.uillinois.edu"
+$gpos | Where { $_.DisplayName -like "engr ews*license*" } | Select DisplayName,Id
 
 # -----------------------------------------------------------------------------
 
