@@ -89,7 +89,7 @@ Import-Module "~/temp/powershell scripts/Test-ConnectionAsync.ps1m"
 # -----------------------------------------------------------------------------
 
 # Add multiple computer objects with sequentially-numbered and zero-padded names to an OU in AD
-# e.g. "COMPUTER-NAME01", "COMPUTER-NAME-02", etc.
+# e.g. "COMPUTER-NAME01", "COMPUTER-NAME02", etc.
 foreach($int in @(1..10)) {
     $num = ([string]$int).PadLeft(2,"0")
     $name = "COMPUTER-NAME$($num)"
