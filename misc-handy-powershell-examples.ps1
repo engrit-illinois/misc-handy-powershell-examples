@@ -569,10 +569,24 @@ function count($array) {
 
 # -----------------------------------------------------------------------------
 
-# Get the raw value of an object property without using annoying ($object).property syntax
-# Using the method call syntax to get a count (which is a common task) is annoying because
-# it requires you to backtrack your cursor to add an opening parenthesis, and also
-# more parentheses lead to more complicated, less-readable, error-prone code.
+# Get the raw value of the property of a calculated array of objects, without using annoying ($array | Where { something }).property syntax,
+# which requires you to backtrack your cursor to add an opening parenthesis.
+# Also more parentheses tend to lead to more complicated, less-readable, error-prone code.
+
+# Example:
+$array = Get-Process
+
+# With a singular, non-calculated object, it's easy:
+$array.Name
+
+# With a "calculated" object, it's annoying:
+($array | Where { $.Name -like "*test*" }).Name
+
+# But you can do this instead:
+# It's, more keystrokes, but avoids using parenthesis, and keeps the pipeline syntax flowing
+$array | Where { $_.Name -like "*test*" } | Select -ExpandProperty Name
+
+# Similarly, using method call syntax to get a count (which is a common task) is annoying for the same reasons:
 
 # Usual method:
 $count = (Get-GPO -All | Where { $_.DisplayName -like "ENGR*"}).count
