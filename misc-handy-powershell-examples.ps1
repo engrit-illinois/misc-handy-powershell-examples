@@ -88,6 +88,16 @@ Import-Module "~/temp/powershell scripts/Test-ConnectionAsync.ps1m"
 
 # -----------------------------------------------------------------------------
 
+# Add multiple computer objects with sequentially-numbered and zero-padded names to an OU in AD
+# e.g. "COMPUTER-NAME01", "COMPUTER-NAME-02", etc.
+foreach($int in @(1..10)) {
+    $num = ([string]$int).PadLeft(2,"0")
+    $name = "COMPUTER-NAME$($num)"
+    New-ADComputer -Name $name -SamAccountName $name -Path "OU=MyOU,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
+}
+
+# -----------------------------------------------------------------------------
+
 # Find GPO named like...
 $gpos = Get-GPO -All -Domain "ad.uillinois.edu"
 $gpos | Where { $_.DisplayName -like "engr ews*license*" } | Select DisplayName,Id
