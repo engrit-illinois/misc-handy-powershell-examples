@@ -82,6 +82,7 @@ foreach($pc in $pcs.Name) {
 # -----------------------------------------------------------------------------
 
 # Ping multiple machines
+# This has been made into a proper module, here: https://github.com/engrit-illinois/Ping-All
 # Test-ConnectionAsync is a custom module: https://gallery.technet.microsoft.com/scriptcenter/Multithreaded-PowerShell-0bc3f59b#content
 Import-Module "~/temp/powershell scripts/Test-ConnectionAsync.ps1m"
 (Get-ADComputer -Filter { Name -like "computer-name-*" }).Name | Test-ConnectionAsync -Count 1 | Format-Table
