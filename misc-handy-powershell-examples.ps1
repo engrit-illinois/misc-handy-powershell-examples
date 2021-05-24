@@ -428,6 +428,7 @@ function Log-Object {
 		log @params
 	}
 }
+
 # -----------------------------------------------------------------------------
 
 # Outputting ENTIRE error records in a readable format
