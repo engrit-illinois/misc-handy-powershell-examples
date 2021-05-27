@@ -707,4 +707,19 @@ $compsNoDescMecm = import-clixml -path C:\mseng3-ctemp\temp-psvar.xml
 
 # -----------------------------------------------------------------------------
 
+# Download a (public) file
+# https://adamtheautomator.com/powershell-download-file/
+# https://www.reddit.com/r/PowerShell/comments/ckn1q7/how_do_you_outfile_and_force_to_create_the/
+
+$source = "https://raw.githubusercontent.com/engrit-illinois/misc-handy-powershell-examples/main/misc-handy-powershell-examples.ps1"
+$destination = "$HOME\Downloads\somefolder\misc-handy-powershell-examples.ps1"
+
+# For public files
+Invoke-WebRequest -Uri $source -OutFile (New-Item -Path $destination -Force)
+
+# For (basic auth?) protected files (untested)
+$creds = Get-Credential
+Invoke-WebRequest -Uri $source -OutFile (New-Item -Path $destination -Force) -Credential $creds
+
+# -----------------------------------------------------------------------------
 
