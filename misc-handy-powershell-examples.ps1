@@ -736,3 +736,12 @@ Test-ComputerSecureChannel # should return $true now
 
 # -----------------------------------------------------------------------------
 
+# Force a computer to re-register its IP with AD DNS
+# For when pinging a computer by it's NETBIOS name, or FQDN returns "Ping request could not find host <computer-name>.ad.uillinois.edu. Please check the name and try again.".
+
+# Run this on the offending host (locally)
+ipconfig /registerdns
+# Then wait for a bit for AD to register the machine/IP and replicate the info
+
+# -----------------------------------------------------------------------------
+
