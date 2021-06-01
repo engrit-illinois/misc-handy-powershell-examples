@@ -723,3 +723,16 @@ Invoke-WebRequest -Uri $source -OutFile (New-Item -Path $destination -Force) -Cr
 
 # -----------------------------------------------------------------------------
 
+# Fix the "lost trust relationship with domain" error, without needing to unjoin/reboot/rejoin
+# https://www.reddit.com/r/PowerShell/comments/8d4tsr/a_quick_powertip_the_trust_relationship_between/
+# https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/test-computersecurechannel?view=powershell-5.1
+
+# Test if the machine is properly domain-joined:
+Test-ComputerSecureChannel # returns $true if so, $false if not
+# Repair it
+Test-ComputerSecureChannel -repair -credential "uofi\mseng3" # also returns $true if so, $false if not
+# Test again
+Test-ComputerSecureChannel # should return $true now
+
+# -----------------------------------------------------------------------------
+
