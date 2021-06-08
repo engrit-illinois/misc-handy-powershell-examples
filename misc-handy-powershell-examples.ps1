@@ -745,3 +745,12 @@ ipconfig /registerdns
 
 # -----------------------------------------------------------------------------
 
+# Get resolution of monitors in a lab
+$monitors = foreach($num in @(1..5)) {
+    $name = "dcl-l520-test0$num"
+    Get-CimInstance -ComputerName $name -Class Win32_VideoController
+}
+$monitors | Where { $_.Caption -notlike "*remote*" } | Select PSComputerName,Caption,CurrentHorizontalResolution,CirrentVerticalResolution,VideoModeDescription | Format-Table 
+
+# -----------------------------------------------------------------------------
+
