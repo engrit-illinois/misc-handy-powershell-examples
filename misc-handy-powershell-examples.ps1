@@ -99,6 +99,35 @@ foreach($int in @(1..10)) {
 
 # -----------------------------------------------------------------------------
 
+# Rename a computer and immediately restart
+# Remove the -Restart parameter to not restart
+Invoke-Command -ComputerName "COMP-NAME-OLD" -ScriptBlock { Rename-Computer -NewName "COMP-NAME-NEW" -DomainCredential "uofi\su-netid" -Force -Restart }
+
+# -----------------------------------------------------------------------------
+
+# Rename multiple computers and immediately restart them
+# Remove the -Restart parameter to not restart
+# e.g. rename ENGR-101-01 through ENGR-101-10 to ENGR-202-01 through ENGR-202-10
+$remoteCreds = Get-Credential -Message "Enter creds for invoking commands on remote machines" -UserName "uofi\netid"
+$renameCreds = Get-Credential -Message "Enter creds for renaming remote machines" -UserName "uofi\su-netid"
+
+$scriptBlock = {
+	param(
+	    [string]$newName,
+            [System.Management.Automation.PSCredential]$renameCreds
+	)
+	Rename-Computer -DomainCredential $renameCreds -NewName $newName -Force -Restart
+}
+
+foreach($int in @(1..10)) {
+    $num = ([string]$int).PadLeft(2,"0")
+    $oldName = "COMP-OLDNAME-$($num)"
+    $newName = "COMP-NEWNAME-$($num)"
+    Invoke-Command -ComputerName $oldName -Credential $remoteCreds -ScriptBlock $scriptBlock -ArgumentList $newName,$renameCreds
+}
+
+# -----------------------------------------------------------------------------
+
 # Find GPO named like...
 $gpos = Get-GPO -All -Domain "ad.uillinois.edu"
 $gpos | Where { $_.DisplayName -like "engr ews*license*" } | Select DisplayName,Id
