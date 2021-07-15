@@ -776,10 +776,10 @@ ipconfig /registerdns
 
 # Get resolution of monitors in a lab
 # https://stackoverflow.com/questions/7967699/get-screen-resolution-using-wmi-powershell-in-windows-7
-$monitors = foreach($num in @(1..5)) {
-	$num = ([string]$int).PadLeft(2,"0")
-    	$name = "dcl-l520-$num"
-    	Get-CimInstance -ComputerName $name -Class Win32_VideoController
+$monitors = foreach($int in @(1..39)) {
+    $num = ([string]$int).PadLeft(2,"0")
+    $name = "dcl-l520-$num"
+    Get-CimInstance -ComputerName $name -Class Win32_VideoController
 }
 $monitors | Where { $_.Caption -notlike "*remote*" } | Select PSComputerName,Caption,CurrentHorizontalResolution,CirrentVerticalResolution,VideoModeDescription | Format-Table 
 
