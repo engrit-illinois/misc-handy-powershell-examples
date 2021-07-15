@@ -781,6 +781,7 @@ $monitors = foreach($int in @(1..39)) {
     $name = "dcl-l520-$num"
     Get-CimInstance -ComputerName $name -Class Win32_VideoController
 }
+# Filter out any active remote desktop session resolutions
 $monitors | Where { $_.Caption -notlike "*remote*" } | Select PSComputerName,Caption,CurrentHorizontalResolution,CurrentVerticalResolution,VideoModeDescription | Format-Table 
 
 # -----------------------------------------------------------------------------
