@@ -439,7 +439,7 @@ function Log-Object {
 
 	switch($Format) {
 		"List" { $string = ($object | Format-List | Out-String) }
-		#Default { $string = ($object | Format-Table -AutoSize | Out-String) }
+		#Default { $string = ($object | Format-Table | Out-String) }
 		Default { $string = ($object | Format-Table -AutoSize | Out-String) }
 	}
 	$string = $string.Trim()
