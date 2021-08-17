@@ -17,6 +17,25 @@ foreach($comp in $comps.Name) {
 
 # -----------------------------------------------------------------------------
 
+# Do something on multiple computers remotely, in parallel
+# https://devblogs.microsoft.com/powershell/powershell-foreach-object-parallel-feature/
+# In this example I'm grabbing a list of computer names from the direct membership rules of a MECM collection
+# and then deleteing certain folders from each of those computers
+
+# Requires Powershell 5.1
+Get-CMCollectionDirectMembershipRule -CollectionName "UIUC-ENGR-IS Temp Matlab R2018b/R2019a removal" | Select -ExpandProperty RuleName
+
+# Requires Powershell 7
+$comps | ForEach-Object -ThrottleLimit 15 -Parallel {
+    Write-Host "Processing $_..."
+    Invoke-Command -ComputerName $_ -ScriptBlock {
+        Remove-Item -Path "C:\Program Files\MATLAB\R2018b\" -Recurse -Force
+        Remove-Item -Path "C:\Program Files\MATLAB\R2019a\" -Recurse -Force
+    }    
+}
+
+# -----------------------------------------------------------------------------
+
 # Create a new shortcut
 $pathLNK = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Protege.lnk"
 $pathTarget = "C:\Program Files\Protege.exe"
