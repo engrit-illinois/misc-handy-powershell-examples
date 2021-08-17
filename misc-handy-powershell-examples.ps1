@@ -23,9 +23,11 @@ foreach($comp in $comps.Name) {
 # and then deleteing certain folders from each of those computers
 
 # Requires Powershell 5.1
-Get-CMCollectionDirectMembershipRule -CollectionName "UIUC-ENGR-IS Temp Matlab R2018b/R2019a removal" | Select -ExpandProperty RuleName
+$comps = Get-CMCollectionDirectMembershipRule -CollectionName "UIUC-ENGR-IS Temp Matlab R2018b/R2019a removal" | Select -ExpandProperty RuleName
+# Here I just dump the output to Notepad++ and format it as an array so I can use it below in a different Powershell 7 prompt
 
 # Requires Powershell 7
+$comps = "MEL-1001-10","KH-105-03","KH-107-03","EH-406B8-28"... # etc., etc.
 $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
     Write-Host "Processing $_..."
     Invoke-Command -ComputerName $_ -ScriptBlock {
