@@ -807,3 +807,18 @@ $monitors | Where { $_.Caption -notlike "*remote*" } | Select PSComputerName,Cap
 
 # -----------------------------------------------------------------------------
 
+# This example shows both how to pull the most recently-modified file matching a given name
+# and how to check if a text file contains a specific string
+
+$latestLog = Get-ChildItem -Path "c:\engrit\logs" -Filter "filename_*.log" | Sort LastWriteTime -Descending | Select -First 1
+
+$content = $latestLog | Get-Content
+$string = "Some text."
+if($content | Select-String -Pattern $string) {
+	Write-Host "The file `"$($latestLog.Name)`" does contain the string `"$($string)`"."
+}
+else {
+	Write-Host "The file `"$($latestLog.Name)`" does NOT contain the string `"$($string)`"."
+}
+
+# -----------------------------------------------------------------------------
