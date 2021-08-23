@@ -94,10 +94,14 @@ Invoke-Command -ComputerName "computer-name" -ScriptBlock { Clear-RecycleBin -Fo
 
 # Blow away all default-location Dropbox folders on a set of machines:
 $ErrorActionPreference = 'SilentlyContinue' 
-$pcs = Get-ADComputer -filter 'name -like "computer-name-*"'
-foreach($pc in $pcs.Name) {
-    invoke-command -computername $pc -scriptblock {remove-item "c:\users\*\dropbox" -recurse -force -ErrorAction Ignore}
-    invoke-command -computername $pc -ScriptBlock {remove-item "c:\users\*\AppData\Local\Dropbox" -recurse -force -ErrorAction Ignore}
+$comps = Get-ADComputer -Filter 'name -like "computer-name-*"'
+$comps.Name | ForEach-Object -Parallel {
+    Write-Host "Processing $($_)..."
+    Invoke-Command -ComputerName $_ -ScriptBlock {
+        Remove-Item "c:\users\*\dropbox" -Recurse -Force -ErrorAction Ignore
+        Remove-Item "c:\users\*\AppData\Local\Dropbox" -Recurse -Force -ErrorAction Ignore
+    }
+    Write-Host "Done processing $($_)."
 }
 
 # -----------------------------------------------------------------------------
