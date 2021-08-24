@@ -8,9 +8,9 @@ Exit
 
 # Do something on multiple computers remotely
 $comps = Get-ADComputer -Filter { Name -like "gelib-4c-*" }
-foreach($comp in $comps.Name) {
-    Write-Host "Processing $comp..."
-    Invoke-Command -ComputerName $comp -ScriptBlock {
+$comps.Name | ForEach-Object {
+    Write-Host "Processing $_..."
+    Invoke-Command -ComputerName $_ -ScriptBlock {
         # Do stuff here
     }    
 }
