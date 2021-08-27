@@ -826,3 +826,11 @@ else {
 }
 
 # -----------------------------------------------------------------------------
+
+# Count the number of lines, words, and characters across all text files matching a given path, and with given extensions:
+$path = ".\*"
+$types = "*.php","*.js","*.html","*.ps1"
+Get-ChildItem -Path $path -Include $types | Get-Content | Measure-Object -Line -Word -Character
+
+# -----------------------------------------------------------------------------
+
