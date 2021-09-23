@@ -834,3 +834,17 @@ Get-ChildItem -Path $path -Include $types | Get-Content | Measure-Object -Line -
 
 # -----------------------------------------------------------------------------
 
+# Get the latest boot time of multiple machines:
+# Relies on Get-UptimeHistory: https://github.com/engrit-illinois/Get-UptimeHistory
+
+$query = "gelib-057-*"
+$data = Get-ADComputer -Filter { Name -like $query } | ForEach-Object -TimeoutSeconds 300 -Parallel {
+    $_ | Add-Member -PassThru -Force -NotePropertyName "_UptimeHistory" -NotePropertyValue (Get-UptimeHistory -ComputerName $_.Name -ErrorAction Ignore | Sort Date)
+}
+$summary = $data | Sort Name | Select Name,@{Name="LatestBoot";Expression={$_._UptimeHistory | Select -ExpandProperty Date | Select -Last 1}}
+$summary
+$ts = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+$summary | Export-Csv -NoTypeInformation -Encoding "Ascii" -Path "c:\engrit\logs\UptimeHistory_$($ts).csv"
+
+# -----------------------------------------------------------------------------
+
