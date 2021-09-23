@@ -836,6 +836,7 @@ Get-ChildItem -Path $path -Include $types | Get-Content | Measure-Object -Line -
 
 # Get the latest boot time of multiple machines:
 # Relies on Get-UptimeHistory: https://github.com/engrit-illinois/Get-UptimeHistory
+# Useful for running before and after a mass reboot, to compare and identify which machines successfully rebooted
 
 $query = "gelib-057-*"
 $data = Get-ADComputer -Filter { Name -like $query } | ForEach-Object -TimeoutSeconds 300 -Parallel {
