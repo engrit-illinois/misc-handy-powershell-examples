@@ -849,3 +849,10 @@ $summary
 
 # -----------------------------------------------------------------------------
 
+# Pull Name, NetID, and UIN for all members of a given AD group
+
+$group = "engrit-usi-labs"
+Get-ADGroup engrit-usi-labs | Get-ADGroupMember | Get-ADUser -Properties * | Select DisplayName,Name,uiucEduUIN
+
+# -----------------------------------------------------------------------------
+
