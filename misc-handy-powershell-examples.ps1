@@ -856,3 +856,10 @@ Get-ADGroup engrit-usi-labs | Get-ADGroupMember | Get-ADUser -Properties * | Sel
 
 # -----------------------------------------------------------------------------
 
+# Lock login session from command line
+# https://www.howtogeek.com/686575/how-to-lock-your-windows-10-pc-using-command-prompt/
+
+Rundll32.exe user32.dll,LockWorkStation
+
+# -----------------------------------------------------------------------------
+
