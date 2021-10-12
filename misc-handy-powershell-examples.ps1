@@ -387,21 +387,6 @@ function log {
 	# Check if this particular message is too verbose for the given $Verbosity level
 	if($V -le $Verbosity) {
 
-		# Check if this particular message is supposed to be output to console
-		if(!$NoConsole) {
-
-			# Check if we're allowing console output
-			if(!$NoConsoleOutput) {
-
-				if($NoNL) {
-					Write-Host $Msg -NoNewline -ForegroundColor $FC -BackgroundColor $BC
-				}
-				else {
-					Write-Host $Msg -ForegroundColor $FC -BackgroundColor $BC
-				}
-			}
-		}
-
 		# Check if this particular message is supposed to be logged
 		if(!$NoLog) {
 
@@ -419,6 +404,21 @@ function log {
 				}
 				else {
 					$Msg | Out-File $Log -Append
+				}
+			}
+		}
+
+		# Check if this particular message is supposed to be output to console
+		if(!$NoConsole) {
+
+			# Check if we're allowing console output
+			if(!$NoConsoleOutput) {
+
+				if($NoNL) {
+					Write-Host $Msg -NoNewline -ForegroundColor $FC -BackgroundColor $BC
+				}
+				else {
+					Write-Host $Msg -ForegroundColor $FC -BackgroundColor $BC
 				}
 			}
 		}
