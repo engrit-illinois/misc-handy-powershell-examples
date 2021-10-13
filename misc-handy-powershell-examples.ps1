@@ -624,6 +624,22 @@ function count($array) {
 
 # -----------------------------------------------------------------------------
 
+# Shorthand for an annoying common line to add new members to objects
+
+function addm($property, $value, $object, $adObject = $false) {
+	if($adObject) {
+		# This gets me EVERY FLIPPIN TIME:
+		# https://stackoverflow.com/questions/32919541/why-does-add-member-think-every-possible-property-already-exists-on-a-microsoft
+		$object | Add-Member -NotePropertyName $property -NotePropertyValue $value -Force
+	}
+	else {
+		$object | Add-Member -NotePropertyName $property -NotePropertyValue $value
+	}
+	$object
+}
+
+# -----------------------------------------------------------------------------
+
 # Get the raw value of the property of a calculated array of objects, without using annoying ($array | Where { something }).property syntax,
 # which requires you to backtrack your cursor to add an opening parenthesis.
 # Also more parentheses tend to lead to more complicated, less-readable, error-prone code.
