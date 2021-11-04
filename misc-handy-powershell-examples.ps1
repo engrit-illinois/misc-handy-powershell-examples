@@ -297,11 +297,18 @@ Get-History
 
 # Previous sessions:
 # https://serverfault.com/questions/891265/how-to-search-powershell-command-history-from-previous-sessions
-Get-Content (Get-PSReadlineOption).HistorySavePath | ? { $_ -like '*adobe*' }
+Get-Content (Get-PSReadlineOption).HistorySavePath | Where { $_ -like '*adobe*' }
 
 # Previous session history file location:
 (Get-PSReadlineOption).HistorySavePath
 # i.e. "C:\Users\username\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt"
+
+# -----------------------------------------------------------------------------
+
+# Restart the clipboard service used to copy content between RDP sessions
+# https://www.svenbit.com/2014/11/restart-copy-and-paste-clipboard-functionality-in-rdp/
+# Run on remote server:
+Get-Process rdpclip | Stop-Process; rdpclip
 
 # -----------------------------------------------------------------------------
 
