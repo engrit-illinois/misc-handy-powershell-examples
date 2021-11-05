@@ -886,3 +886,12 @@ Rundll32.exe user32.dll,LockWorkStation
 
 # -----------------------------------------------------------------------------
 
+# Get video card model from multiple machines:
+$comps = Get-ADComputer -Filter { Name -like "mel-1009-*" }
+$cards = $comps | ForEach-Object {
+    Get-CimInstance -ComputerName $_.Name -ClassName "Win32_VideoController"
+}
+$cards | Select PSComputerName,Name,Caption,Description
+
+# -----------------------------------------------------------------------------
+
