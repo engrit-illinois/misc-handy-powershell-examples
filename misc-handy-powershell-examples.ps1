@@ -722,10 +722,12 @@ function Get-LensData {
 	param(
 		[string]$DataType,
 		[string]$Query,
-		[switch]$All
+		[switch]$All,
+		[PSCredential]$Credential
 	)
 	function Get-LensHeaders {
-		$creds = Get-Credential
+		$creds = $Credential
+		if(-not $creds) { $creds = Get-Credential }
 		$user = $creds.UserName
 		$pass = $creds.GetNetworkCredential().Password
 		$credsString = "${user}:${pass}"
