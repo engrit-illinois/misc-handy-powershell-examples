@@ -119,6 +119,7 @@ Import-Module "~/temp/powershell scripts/Test-ConnectionAsync.ps1m"
 foreach($int in @(1..10)) {
     $num = ([string]$int).PadLeft(2,"0")
     $name = "COMPUTER-NAME$($num)"
+    Write-Host $name
     New-ADComputer -Name $name -SamAccountName $name -Path "OU=MyOU,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
 }
 
