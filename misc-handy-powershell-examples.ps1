@@ -898,3 +898,9 @@ $cards | Select PSComputerName,Name,Caption,Description
 
 # -----------------------------------------------------------------------------
 
+# Lock session via commandline
+# https://www.cocosenor.com/articles/windows-10/8-ways-to-lock-computer-in-windows-10.html#way-6
+rundll32.exe user32.dll,LockWorkStation
+
+# -----------------------------------------------------------------------------
+
