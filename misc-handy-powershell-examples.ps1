@@ -582,6 +582,56 @@ foreach($item in $targetItems) {
 
 # -----------------------------------------------------------------------------
 
+; Quick and dirty AHK script to automate removing credential entries from the Windows Credential Manager GUI.
+; Mostly because the cmdkey.exe executable (which can properly automate this), doesn't support deleting entries with special characters like parentheses and combinations of hyphens and spaces.
+
+#NoEnv
+#SingleInstance Force
+SetWorkingDir %A_ScriptDir%
+SetKeyDelay, 100, 50 ; First number is delay between key presses, second is press duration, both in ms.
+
+; Select the first entry you want to delete and delete it. The focused element will return to the very top of the window.
+; Press tab until the focus loops around to the "expand" arrow of the next entry you want to delete. Count that number of tab presses and enter it here.
+TabsToFirstEntry = 17
+; Approximate number of sequential entries you want to delete. Err on the low side to be safe.
+Iterations = 70
+
+; Start with focus on the "expand" arrow of the first entry you want to delete.
+; Hit F1 and don't touch anything
+Hotkey, F1, StartScript ; Define label to goto when F1 is pressed
+Hotkey, F4, ReloadScript ; Define label to goto when F4 is pressed
+Return ; Do nothing more until a hotkey is pressed
+
+StartScript:
+	SoundBeep 1000
+	Loop %Iterations% {
+		Send {Space} ; Expands entry
+		Send {Tab 2} ; Navigates to "Remove" link
+		Send {Enter} ; Selects "Remove" link
+		Sleep 200 ; Waits for confirmation dialog to pop up
+		Send {y} ; Selects "yes" on confirmation dialog
+		Send {Tab %TabsToFirstEntry%} ; Tabs from top of window down to first entry to delete
+	}
+	SoundBeep 1500 ; Beep to signify completion
+	Return
+
+ReloadScript:
+	; Make sure all relevant keys are not still virtually pressed.
+	Send {Space up}
+	Send {Tab up}
+	Send {Enter up}
+	Send {y up}
+	
+	; Beeps to signify reload
+	SoundBeep 1000
+	SoundBeep 1000
+	SoundBeep 1000
+	Reload
+
+; EOF
+
+# -----------------------------------------------------------------------------
+
 # Get the last logon timestamp for a group of machines:
 # Must be run as your SU account to get the lastLogonTimestamp field data
 # https://stackoverflow.com/questions/13091719/converting-lastlogon-to-datetime-format
