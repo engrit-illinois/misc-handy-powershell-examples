@@ -81,60 +81,8 @@ dir "c:\temp\*" -Recurse -File | Sort "length" -Descending | Select "length","fu
 
 # -----------------------------------------------------------------------------
 
-# Empty recycle bins
-# https://github.com/PowerShell/PowerShell/issues/6743
-# https://serverfault.com/questions/822514/clear-recyclebin-on-remote-computer-fails
+# Disk cleaning actions
 
-$lab = "ECEB-9999"
-$nums = @(4,5,7,11,14)
-
-$comps = @()
-$nums | ForEach-Object {
-    $num = ([string]$_).PadLeft(2,"0")
-    $comps += "$lab-$($num)"
-}
-$ErrorActionPreference = 'SilentlyContinue'
-$comps | ForEach-Object -ThrottleLimit 15 -Parallel {
-    Write-Host "Processing $($_)..."
-    Invoke-Command -ComputerName "computer-name" -ScriptBlock { Clear-RecycleBin -Force -DriveLetter C }
-}
-
-# -----------------------------------------------------------------------------
-
-# Run disk cleanup remotely
-# http://www.theservergeeks.com/how-todisk-cleanup-using-powershell/
-
-$lab = "ECEB-9999"
-$nums = @(4,5,7,11,14)
-
-$comps = @()
-$nums | ForEach-Object {
-    $num = ([string]$_).PadLeft(2,"0")
-    $comps += "$lab-$($num)"
-}
-$comps | ForEach-Object -ThrottleLimit 15 -Parallel {
-	Write-Host "Processing $_..."
-	Invoke-Command -ComputerName $_ -ScriptBlock {
-		$HKLM = [UInt32] “0x80000002”
-		$strKeyPath = “SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches”
-		$strValueName = “StateFlags0065”
-		$subkeys = gci -Path HKLM:\$strKeyPath -Name
-		foreach($subkey in $subkeys) {
-			try { New-ItemProperty -Path HKLM:\$strKeyPath\$subkey -Name $strValueName -PropertyType DWord -Value 2 -ErrorAction SilentlyContinue| Out-Null }
-			catch {}
-			try { Start-Process cleanmgr -ArgumentList “/sagerun:65” -Wait -NoNewWindow -ErrorAction SilentlyContinue -WarningAction SilentlyContinue }
-			catch { }
-		}
-		foreach($subkey in $subkeys) {
-			try { Remove-ItemProperty -Path HKLM:\$strKeyPath\$subkey -Name $strValueName | Out-Null }
-			catch { }
-		}
-	}
-}
-
-# -----------------------------------------------------------------------------
-
-# Blow away all default-location Dropbox folders on a set of machines:
 $lab = "ECEB-9999"
 $nums = @(4,5,7,11,14)
 
@@ -147,8 +95,40 @@ $ErrorActionPreference = 'SilentlyContinue'
 $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
     Write-Host "Processing $($_)..."
     Invoke-Command -ComputerName $_ -ScriptBlock {
-        Remove-Item "c:\users\*\dropbox" -Recurse -Force -ErrorAction Ignore
+    	
+	# Empty recycle bin
+	# https://github.com/PowerShell/PowerShell/issues/6743
+	# https://serverfault.com/questions/822514/clear-recyclebin-on-remote-computer-fails
+    	Invoke-Command -ComputerName "computer-name" -ScriptBlock { Clear-RecycleBin -Force -DriveLetter C }
+	
+	# Delete temporary files
+        Remove-Item "c:\temp" -Recurse -Force -ErrorAction Ignore
+        Remove-Item "c:\windows\temp" -Recurse -Force -ErrorAction Ignore
+	
+	# Blow away default-location Dropbox folders
+	Remove-Item "c:\users\*\dropbox" -Recurse -Force -ErrorAction Ignore
         Remove-Item "c:\users\*\AppData\Local\Dropbox" -Recurse -Force -ErrorAction Ignore
+	
+	# Run disk cleanup
+	# http://www.theservergeeks.com/how-todisk-cleanup-using-powershell/
+	# Note: this sometimes hangs and doesn't always seem to have an effect. Use with caution.
+	# Might be able to be improved with advice at the following link. I haven't had time to investigate.
+	# https://stackoverflow.com/questions/28852786/automate-process-of-disk-cleanup-cleanmgr-exe-without-user-intervention
+	$HKLM = [UInt32] “0x80000002”
+	$strKeyPath = “SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches”
+	$strValueName = “StateFlags0065”
+	$subkeys = gci -Path HKLM:\$strKeyPath -Name
+	foreach($subkey in $subkeys) {
+		try { New-ItemProperty -Path HKLM:\$strKeyPath\$subkey -Name $strValueName -PropertyType DWord -Value 2 -ErrorAction SilentlyContinue| Out-Null }
+		catch {}
+		try { Start-Process cleanmgr -ArgumentList “/sagerun:65” -Wait -NoNewWindow -ErrorAction SilentlyContinue -WarningAction SilentlyContinue }
+		catch { }
+	}
+	foreach($subkey in $subkeys) {
+		try { Remove-ItemProperty -Path HKLM:\$strKeyPath\$subkey -Name $strValueName | Out-Null }
+		catch { }
+	}
+	
     }
 }
 
