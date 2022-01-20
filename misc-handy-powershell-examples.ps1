@@ -6,33 +6,34 @@ Exit
 
 # -----------------------------------------------------------------------------
 
-# Do something on multiple computers remotely
+# Do something remotely on multiple computers, in parallel...
+# https://devblogs.microsoft.com/powershell/powershell-foreach-object-parallel-feature/
+# Note the parallel functionality of ForEach-Object requires PowerShell 7
+# To do them NOT in parallel, just remove the -ThrottleLimit and -Parallel parameters from ForEach-Object
+
+# ...based on specific given computer names
+$comps = "MEL-1001-10","KH-105-03","KH-107-03","EH-406B8-28"... # etc., etc.
+
+# ...based on an AD name query
 $comps = Get-ADComputer -Filter { Name -like "gelib-4c-*" }
-$comps.Name | ForEach-Object {
+
+# ...based on direct membership rules of an MECM collection (requires Powershell 5.1)
+$comps = Get-CMCollectionDirectMembershipRule -CollectionName "UIUC-ENGR-IS Temp Matlab R2018b/R2019a removal" | Select -ExpandProperty RuleName
+
+# ...based on sequentially-named computers (i.e. a lab)
+$lab = "ECEB-3022"
+$nums = @(4,5,7,11,14)
+$comps = @()
+$nums | ForEach-Object {
+    $num = ([string]$_).PadLeft(2,"0")
+    $comps += "$lab-$($num)"
+}
+
+# Doing the thing
+$comps.Name | ForEach-Object -ThrottleLimit 15 -Parallel {
     Write-Host "Processing $_..."
     Invoke-Command -ComputerName $_ -ScriptBlock {
         # Do stuff here
-    }    
-}
-
-# -----------------------------------------------------------------------------
-
-# Do something on multiple computers remotely, in parallel
-# https://devblogs.microsoft.com/powershell/powershell-foreach-object-parallel-feature/
-# In this example I'm grabbing a list of computer names from the direct membership rules of a MECM collection
-# and then deleteing certain folders from each of those computers
-
-# Requires Powershell 5.1
-$comps = Get-CMCollectionDirectMembershipRule -CollectionName "UIUC-ENGR-IS Temp Matlab R2018b/R2019a removal" | Select -ExpandProperty RuleName
-# Here I just dump the output to Notepad++ and format it as an array so I can use it below in a different Powershell 7 prompt
-
-# Requires Powershell 7
-$comps = "MEL-1001-10","KH-105-03","KH-107-03","EH-406B8-28"... # etc., etc.
-$comps | ForEach-Object -ThrottleLimit 15 -Parallel {
-    Write-Host "Processing $_..."
-    Invoke-Command -ComputerName $_ -ScriptBlock {
-        Remove-Item -Path "C:\Program Files\MATLAB\R2018b\" -Recurse -Force
-        Remove-Item -Path "C:\Program Files\MATLAB\R2019a\" -Recurse -Force
     }    
 }
 
@@ -89,6 +90,34 @@ Invoke-Command -ComputerName "computer-name" -ScriptBlock { Clear-RecycleBin -Fo
 
 # Run disk cleanup remotely
 # http://www.theservergeeks.com/how-todisk-cleanup-using-powershell/
+
+$lab = "ECEB-3022"
+$nums = @(4,5,7,11,14)
+
+$comps = @()
+$nums | ForEach-Object {
+    $num = ([string]$_).PadLeft(2,"0")
+    $comps += "$lab-$($num)"
+}
+$comps | ForEach-Object -ThrottleLimit 15 -Parallel {
+	Write-Host "Processing $_..."
+	Invoke-Command -ComputerName $_ -ScriptBlock {
+		$HKLM = [UInt32] “0x80000002”
+		$strKeyPath = “SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches”
+		$strValueName = “StateFlags0065”
+		$subkeys = gci -Path HKLM:\$strKeyPath -Name
+		foreach($subkey in $subkeys) {
+			try { New-ItemProperty -Path HKLM:\$strKeyPath\$subkey -Name $strValueName -PropertyType DWord -Value 2 -ErrorAction SilentlyContinue| Out-Null }
+			catch {}
+			try { Start-Process cleanmgr -ArgumentList “/sagerun:65” -Wait -NoNewWindow -ErrorAction SilentlyContinue -WarningAction SilentlyContinue }
+			catch { }
+		}
+		foreach($subkey in $subkeys) {
+			try { Remove-ItemProperty -Path HKLM:\$strKeyPath\$subkey -Name $strValueName | Out-Null }
+			catch { }
+		}
+	}
+}
 
 # -----------------------------------------------------------------------------
 
