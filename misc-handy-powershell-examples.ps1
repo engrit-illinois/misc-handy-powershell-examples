@@ -111,7 +111,7 @@ $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
 	
 	# Run disk cleanup
 	# http://www.theservergeeks.com/how-todisk-cleanup-using-powershell/
-	# Note: this sometimes hangs and doesn't always seem to have an effect. Use with caution.
+	# Note: this sometimes hangs and doesn't always seem to have an effect, possibly due to waiting for user GUI interaction. Use with caution.
 	# Might be able to be improved with advice at the following link. I haven't had time to investigate.
 	# https://stackoverflow.com/questions/28852786/automate-process-of-disk-cleanup-cleanmgr-exe-without-user-intervention
 	$HKLM = [UInt32] “0x80000002”
