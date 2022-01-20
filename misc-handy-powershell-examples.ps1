@@ -21,7 +21,7 @@ $comps = Get-ADComputer -Filter { Name -like "gelib-4c-*" }
 $comps = Get-CMCollectionDirectMembershipRule -CollectionName "UIUC-ENGR-IS Temp Matlab R2018b/R2019a removal" | Select -ExpandProperty RuleName
 
 # ...based on sequentially-named computers (i.e. a lab)
-$lab = "ECEB-3022"
+$lab = "ECEB-9999"
 $nums = @(4,5,7,11,14)
 $comps = @()
 $nums | ForEach-Object {
@@ -84,14 +84,27 @@ dir "c:\temp\*" -Recurse -File | Sort "length" -Descending | Select "length","fu
 # Empty recycle bins
 # https://github.com/PowerShell/PowerShell/issues/6743
 # https://serverfault.com/questions/822514/clear-recyclebin-on-remote-computer-fails
-Invoke-Command -ComputerName "computer-name" -ScriptBlock { Clear-RecycleBin -Force -DriveLetter C }
+
+$lab = "ECEB-9999"
+$nums = @(4,5,7,11,14)
+
+$comps = @()
+$nums | ForEach-Object {
+    $num = ([string]$_).PadLeft(2,"0")
+    $comps += "$lab-$($num)"
+}
+$ErrorActionPreference = 'SilentlyContinue'
+$comps | ForEach-Object -ThrottleLimit 15 -Parallel {
+    Write-Host "Processing $($_)..."
+    Invoke-Command -ComputerName "computer-name" -ScriptBlock { Clear-RecycleBin -Force -DriveLetter C }
+}
 
 # -----------------------------------------------------------------------------
 
 # Run disk cleanup remotely
 # http://www.theservergeeks.com/how-todisk-cleanup-using-powershell/
 
-$lab = "ECEB-3022"
+$lab = "ECEB-9999"
 $nums = @(4,5,7,11,14)
 
 $comps = @()
@@ -122,15 +135,21 @@ $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
 # -----------------------------------------------------------------------------
 
 # Blow away all default-location Dropbox folders on a set of machines:
-$ErrorActionPreference = 'SilentlyContinue' 
-$comps = Get-ADComputer -Filter 'name -like "computer-name-*"'
-$comps.Name | ForEach-Object -Parallel {
+$lab = "ECEB-9999"
+$nums = @(4,5,7,11,14)
+
+$comps = @()
+$nums | ForEach-Object {
+    $num = ([string]$_).PadLeft(2,"0")
+    $comps += "$lab-$($num)"
+}
+$ErrorActionPreference = 'SilentlyContinue'
+$comps | ForEach-Object -ThrottleLimit 15 -Parallel {
     Write-Host "Processing $($_)..."
     Invoke-Command -ComputerName $_ -ScriptBlock {
         Remove-Item "c:\users\*\dropbox" -Recurse -Force -ErrorAction Ignore
         Remove-Item "c:\users\*\AppData\Local\Dropbox" -Recurse -Force -ErrorAction Ignore
     }
-    Write-Host "Done processing $($_)."
 }
 
 # -----------------------------------------------------------------------------
