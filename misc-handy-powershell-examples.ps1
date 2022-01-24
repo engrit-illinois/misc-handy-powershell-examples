@@ -88,26 +88,26 @@ $nums = @(4,5,7,11,14)
 
 $comps = @()
 $nums | ForEach-Object {
-    $num = ([string]$_).PadLeft(2,"0")
-    $comps += "$lab-$($num)"
+	$num = ([string]$_).PadLeft(2,"0")
+	$comps += "$lab-$($num)"
 }
 $ErrorActionPreference = 'SilentlyContinue'
 $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
-    Write-Host "Processing $($_)..."
-    Invoke-Command -ComputerName $_ -ScriptBlock {
-    	
+	Write-Host "Processing $($_)..."
+	Invoke-Command -ComputerName $_ -ScriptBlock {
+		
 	# Empty recycle bin
 	# https://github.com/PowerShell/PowerShell/issues/6743
 	# https://serverfault.com/questions/822514/clear-recyclebin-on-remote-computer-fails
-    	Invoke-Command -ComputerName "computer-name" -ScriptBlock { Clear-RecycleBin -Force -DriveLetter C }
+		Invoke-Command -ComputerName "computer-name" -ScriptBlock { Clear-RecycleBin -Force -DriveLetter C }
 	
 	# Delete temporary files
-        Remove-Item "c:\temp" -Recurse -Force -ErrorAction Ignore
-        Remove-Item "c:\windows\temp" -Recurse -Force -ErrorAction Ignore
+		Remove-Item "c:\temp" -Recurse -Force -ErrorAction Ignore
+		Remove-Item "c:\windows\temp" -Recurse -Force -ErrorAction Ignore
 	
 	# Blow away default-location Dropbox folders
 	Remove-Item "c:\users\*\dropbox" -Recurse -Force -ErrorAction Ignore
-        Remove-Item "c:\users\*\AppData\Local\Dropbox" -Recurse -Force -ErrorAction Ignore
+		Remove-Item "c:\users\*\AppData\Local\Dropbox" -Recurse -Force -ErrorAction Ignore
 	
 	# Run disk cleanup
 	# http://www.theservergeeks.com/how-todisk-cleanup-using-powershell/
@@ -129,7 +129,7 @@ $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
 		catch { }
 	}
 	
-    }
+	}
 }
 
 # -----------------------------------------------------------------------------
