@@ -981,3 +981,20 @@ rundll32.exe user32.dll,LockWorkStation
 
 # -----------------------------------------------------------------------------
 
+# Excel formula for pulling "<y>" out of a string formatted like "<x>-<y>-<z>", or "<x>-<y>".
+# e.g. Pulls "9999" from "MEL-9999-01", or "TEST01" from "EWS-TEST01".
+# Splitting a string like this in excel via a formula is, to this day, WAY harder than it should be.
+# This can be done as a one-time operation using the "Text to columns" feature, but that is dumb.
+# Without a proper "SPLIT()" function, you must cobble it together out of LEFT(), MID(), RIGHT(), and FIND() or SEARCH().
+# And it only gets more complicated with more than 2 delimiters.
+
+# a = value from cell with computer name
+# b = length of computer name
+# x = position of first hyphen
+# y = position of second hyphen (or error if no second hyphen)
+# z = length of second term (between first delimiter and second delimiter or end of string)
+
+=LET(a,A2,b,LEN(a),x,FIND("-",a),y,FIND("-",a,x+1),z,IF(ISERROR(y),b,y-1),MID(a,x+1,z-x))
+
+# -----------------------------------------------------------------------------
+
