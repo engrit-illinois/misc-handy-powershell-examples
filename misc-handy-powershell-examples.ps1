@@ -353,9 +353,15 @@ $apps | Select Name,IdentifyingNumber | Sort Name
 # Logging parameters
 # If you're making a module, you can use this param block, otherwise you can take them out of the param() and just make them global variables.
 param(
+	# ":ENGRIT:" will be replaced with "c:\engrit\logs\$($MODULE_NAME)_:TS:.csv"
+	# ":TS:" will be replaced with start timestamp
+	[string]$Csv,
+		
 	# ":ENGRIT:" will be replaced with "c:\engrit\logs\$($MODULE_NAME)_:TS:.log"
 	# ":TS:" will be replaced with start timestamp
 	[string]$Log,
+	
+	[string]$LogDir = "c:\engrit\logs",
 
 	[switch]$NoConsoleOutput,
 	[string]$Indent = "    ",
@@ -368,7 +374,6 @@ param(
 
 # Logic to determine final filename
 $MODULE_NAME = "Module-Name"
-$ENGRIT_LOG_DIR = "c:\engrit\logs"
 $ENGRIT_LOG_FILENAME = "$($MODULE_NAME)_:TS:"
 $START_TIMESTAMP = Get-Date -Format $LogFileTimestampFormat
 
