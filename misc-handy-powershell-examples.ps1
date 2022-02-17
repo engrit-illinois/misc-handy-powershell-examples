@@ -360,8 +360,6 @@ param(
 	# ":ENGRIT:" will be replaced with "c:\engrit\logs\$($MODULE_NAME)_:TS:.log"
 	# ":TS:" will be replaced with start timestamp
 	[string]$Log,
-	
-	[string]$LogDir = "c:\engrit\logs",
 
 	[switch]$NoConsoleOutput,
 	[string]$Indent = "    ",
@@ -374,15 +372,16 @@ param(
 
 # Logic to determine final filename
 $MODULE_NAME = "Module-Name"
+$ENGRIT_LOG_DIR = "c:\engrit\logs"
 $ENGRIT_LOG_FILENAME = "$($MODULE_NAME)_:TS:"
 $START_TIMESTAMP = Get-Date -Format $LogFileTimestampFormat
 
 if($Log) {
-	$Log = $Log.Replace(":ENGRIT:","$($ENGRIT_LOG_DIR)\$($ENGRIT_LOG_FILENAME).log")
+	$Log = $Log.Replace(":ENGRIT:","$($LogDir)\$($ENGRIT_LOG_FILENAME).log")
 	$Log = $Log.Replace(":TS:",$START_TIMESTAMP)
 }
 if($Csv) {
-	$Csv = $Csv.Replace(":ENGRIT:","$($ENGRIT_LOG_DIR)\$($ENGRIT_LOG_FILENAME).csv")
+	$Csv = $Csv.Replace(":ENGRIT:","$($LogDir)\$($ENGRIT_LOG_FILENAME).csv")
 	$Csv = $Csv.Replace(":TS:",$START_TIMESTAMP)
 }
 
