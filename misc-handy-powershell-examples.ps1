@@ -1003,3 +1003,14 @@ rundll32.exe user32.dll,LockWorkStation
 
 # -----------------------------------------------------------------------------
 
+# Estimate how hard a spinning disk is being pegged
+
+# Get list of counters
+(Get-Counter -ListSet PhysicalDisk).PathsWithInstances
+
+# Get current disk queue length counter
+# Values over 1 are a good metric to identify if a disk is struggling
+Get-Counter -Counter "\PhysicalDisk(0 C:)\Current Disk Queue Length"
+
+# -----------------------------------------------------------------------------
+
