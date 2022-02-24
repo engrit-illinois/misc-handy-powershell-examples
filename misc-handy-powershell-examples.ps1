@@ -377,11 +377,11 @@ $ENGRIT_LOG_FILENAME = "$($MODULE_NAME)_:TS:"
 $START_TIMESTAMP = Get-Date -Format $LogFileTimestampFormat
 
 if($Log) {
-	$Log = $Log.Replace(":ENGRIT:","$($LogDir)\$($ENGRIT_LOG_FILENAME).log")
+	$Log = $Log.Replace(":ENGRIT:","$($ENGRIT_LOG_DIR)\$($ENGRIT_LOG_FILENAME).log")
 	$Log = $Log.Replace(":TS:",$START_TIMESTAMP)
 }
 if($Csv) {
-	$Csv = $Csv.Replace(":ENGRIT:","$($LogDir)\$($ENGRIT_LOG_FILENAME).csv")
+	$Csv = $Csv.Replace(":ENGRIT:","$($ENGRIT_LOG_DIR)\$($ENGRIT_LOG_FILENAME).csv")
 	$Csv = $Csv.Replace(":TS:",$START_TIMESTAMP)
 }
 
