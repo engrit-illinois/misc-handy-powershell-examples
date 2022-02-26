@@ -1014,3 +1014,18 @@ Get-Counter -Counter "\PhysicalDisk(0 C:)\Current Disk Queue Length"
 
 # -----------------------------------------------------------------------------
 
+# Get a quick list of all files/folders in the root of C:\ across multiple machines
+$comps = Get-ADComputer -Filter "Name -like 'dcl-l520-*'" | Select -ExpandProperty Name
+$files = $comps | ForEach-Object -Parallel {
+    $cfiles = Get-ChildItem -Path "\\$($_)\c$\" | Select -ExpandProperty Name
+    $cfilesString = $cfiles -join "`",`""
+    [PSCustomObject]@{
+        "Computer" = $_
+        "CFiles" = $cfiles
+        "CFilesString" = "`"$cfilesString`""
+    }
+}
+$files | Select Computer,CFilesString | Sort Computer | Format-Table
+
+# -----------------------------------------------------------------------------
+
