@@ -370,7 +370,7 @@ param(
 	[int]$Verbosity = 0
 )
 
-# Logic to determine final filename
+# Logic to determine final log filename
 $MODULE_NAME = "Module-Name"
 $ENGRIT_LOG_DIR = "c:\engrit\logs"
 $ENGRIT_LOG_FILENAME = "$($MODULE_NAME)_:TS:"
