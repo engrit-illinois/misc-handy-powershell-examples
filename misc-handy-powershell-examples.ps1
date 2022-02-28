@@ -450,7 +450,7 @@ function log {
 		# Check if this particular message is supposed to be output to console
 		if(!$NoConsole) {
 
-			# Check if we're allowing console output
+			# Check if we're allowing console output at all
 			if(!$NoConsoleOutput) {
 
 				if($NoNL) {
