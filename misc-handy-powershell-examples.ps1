@@ -81,6 +81,16 @@ dir "c:\temp\*" -Recurse -File | Sort "length" -Descending | Select "length","fu
 
 # -----------------------------------------------------------------------------
 
+# Test whether a specific folder (or file, registry entry, etc.) exists on multiple computers
+Get-ADComputer -Filter "Name -like 'eh-406b*'" | Select -ExpandProperty Name | ForEach-Object -Parallel {
+    [PSCustomObject]@{
+        "Name" = $_
+        "Exists" = Invoke-Command -ComputerName $_ -ScriptBlock { Test-Path "c:\macrosenabled" } -ErrorAction SilentlyContinue
+    }
+}
+
+# -----------------------------------------------------------------------------
+
 # Disk cleaning actions
 
 $lab = "ECEB-9999"
