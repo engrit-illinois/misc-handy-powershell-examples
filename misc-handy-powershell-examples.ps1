@@ -627,6 +627,8 @@ $bmp.Save($iconPath,"icon")
 # -----------------------------------------------------------------------------
 
 # Get info from Lens API
+# For a more fully-featured module of this, see: https://github.com/engrit-illinois/Get-LensInfo
+
 function Get-LensData {
 	param(
 		[string]$DataType,
