@@ -729,9 +729,13 @@ Test-ComputerSecureChannel # should return $true now
 # Force a computer to re-register its IP with AD DNS
 # For when pinging a computer by it's NETBIOS name, or FQDN returns "Ping request could not find host <computer-name>.ad.uillinois.edu. Please check the name and try again.".
 
-# Run this on the offending host (locally)
+# Run this on the offending host (locally):
 ipconfig /registerdns
 # Then wait for a bit for AD to register the machine/IP and replicate the info
+
+# Here's a version you can run remotely, using the machine's IP (or regular DNS hostname) since the AD DNS name may not work:
+$comp = "dcl-l416-05.ews.illinois.edu"
+([WMIClass]"\\$comp\ROOT\CImv2:Win32_Process").Create("cmd.exe /c ipconfig /registerdns")
 
 # -----------------------------------------------------------------------------
 
