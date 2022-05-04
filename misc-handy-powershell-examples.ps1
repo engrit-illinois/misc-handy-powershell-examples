@@ -867,3 +867,19 @@ $files | Select Computer,CFilesString | Sort Computer | Format-Table
 
 # -----------------------------------------------------------------------------
 
+# Quickly test whether RDP is responding on a machine:
+# https://deploymentbunny.com/2014/07/02/powershell-is-kingtest-rdp-connection-and-connect/
+$comp = "computer-name-01"
+Test-NetConnection -ComputerName $comp -CommonTCPPort RDP
+
+# Test on multiple machines:
+$query = "computer-name-*"
+$searchbase = "OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
+$comps = Get-ADComputer -SearchBase $searchbase -Filter "name -like `"$query`"" | Select -ExpandProperty Name
+$results = $comps | ForEach-Object -ThrottleLimit 50 -Parallel {
+    Write-Host "Testing `"$_`"..."
+    Test-NetConnection -ComputerName $_ -CommonTCPPort "RDP"
+}
+$results | Format-Table -AutoSize
+
+# -----------------------------------------------------------------------------
