@@ -883,3 +883,9 @@ $results = $comps | ForEach-Object -ThrottleLimit 50 -Parallel {
 $results | Format-Table -AutoSize
 
 # -----------------------------------------------------------------------------
+
+# Get last "DescUpdated" date from EngrIT IS custom AD description format for target computers
+# Relies on other custom functions in mseng3's profile
+Get-ADComputerLike "dcl-l520-*" | Select Name,@{"Name"="Description";"Expression"={($_.Description -split ";")[($strings.length - 2)]}}
+
+# -----------------------------------------------------------------------------
