@@ -889,3 +889,18 @@ $results | Format-Table -AutoSize
 Get-ADComputerLike "dcl-l520-*" | Select Name,@{"Name"="Description";"Expression"={($_.Description -split ";")[($strings.length - 2)]}}
 
 # -----------------------------------------------------------------------------
+
+# Get a report of TPM-related settings from a list of machines
+function Get-TpmInfo($query) {
+	$searchbase = "OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
+	$comps = Get-ADComputer -SearchBase $searchbase -Filter "name -like `"$query`"" | Select -ExpandProperty Name
+	$results = $comps | ForEach-Object -ThrottleLimit 100 -Parallel {
+		Write-Host "Polling `"$_`"..."
+		Invoke-Command -ComputerName $_ -ScriptBlock { Get-Tpm }
+	}
+	$results | Sort PSComputerName | Select PSComputerName,TpmPresent,TpmReady,TpmEnabled,TpmActivated,TpmOwned,ManufacturerVersion,AutoProvisioning | Format-Table
+}
+Get-TpmInfo "dcl-l*-*"
+
+# -----------------------------------------------------------------------------
+
