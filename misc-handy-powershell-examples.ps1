@@ -891,6 +891,7 @@ Get-ADComputerLike "dcl-l520-*" | Select Name,@{"Name"="Description";"Expression
 # -----------------------------------------------------------------------------
 
 # Get a report of TPM-related settings from a list of machines
+# https://docs.microsoft.com/en-us/powershell/module/trustedplatformmodule/?view=windowsserver2022-ps
 function Get-TpmInfo($query) {
 	$searchbase = "OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
 	$comps = Get-ADComputer -SearchBase $searchbase -Filter "name -like `"$query`"" | Select -ExpandProperty Name
