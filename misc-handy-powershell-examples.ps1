@@ -164,7 +164,10 @@ foreach($int in @(1..10)) {
 
 # Rename a single computer and immediately restart
 # Remove the -Restart parameter to not restart
-Invoke-Command -ComputerName "COMP-NAME-OLD" -ScriptBlock { Rename-Computer -NewName "COMP-NAME-NEW" -DomainCredential "uofi\su-netid" -Force -Restart }
+Invoke-Command -ComputerName "COMP-NAME-OLD" -ScriptBlock {
+	Rename-Computer -NewName "COMP-NAME-NEW" -DomainCredential "uofi\su-netid"
+	Restart-Computer
+}
 
 # -----------------------------------------------------------------------------
 
@@ -179,7 +182,8 @@ $scriptBlock = {
 	    [string]$newName,
             [System.Management.Automation.PSCredential]$renameCreds
 	)
-	Rename-Computer -DomainCredential $renameCreds -NewName $newName -Force -Restart
+	Rename-Computer -DomainCredential $renameCreds -NewName $newName
+	Restart-Computer
 }
 
 foreach($int in @(1..10)) {
