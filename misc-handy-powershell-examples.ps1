@@ -909,3 +909,16 @@ Get-TpmInfo "dcl-l*-*"
 
 # -----------------------------------------------------------------------------
 
+# Get AD info for local computer/user without RSAT installed
+# https://social.technet.microsoft.com/forums/windowsserver/en-US/fd0b0a1c-b6dc-4657-8a95-21b6a11377df/using-ad-module-without-loading-rsat?forum=winserverpowershell
+
+$user = "user"
+$adInfo = (([adsisearcher]"(&(objectCategory=User)(samaccountname=$user))").findall()).properties
+$adInfo
+
+$comp = "computer-name-01"
+$adInfo = (([adsisearcher]"(&(objectCategory=Computer)(name=$comp))").findall()).properties
+$adInfo
+
+# -----------------------------------------------------------------------------
+
