@@ -923,6 +923,10 @@ $adInfo
 # -----------------------------------------------------------------------------
 
 # Get LastLogon and LastLogonTimestamp attributes of all AD computer objects in an OU, and display them in a readable format
+# Note these caveats to the accuracy of these attributes: https://stackoverflow.com/a/25898184/994622
+# To summarize:
+# - LastLogon is more accurate, but is not replicated across DCs, so you must query all DCs to find the latest LastLogon
+# - LastLogonTimestamp is replicated, but is only accurate to ~1-2 weeks.
 Get-ADComputer -Filter "name -like 'esb-5101-*'" -SearchBase "OU=PHYS,OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu" -Properties * | Select Name,@{N='LastLogon'; E={[DateTime]::FromFileTime($_.LastLogonTimestamp)}},@{N='LastLogonTimestamp'; E={[DateTime]::FromFileTime($_.LastLogonTimestamp)}}
 
 # -----------------------------------------------------------------------------
