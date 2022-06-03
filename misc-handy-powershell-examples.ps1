@@ -922,3 +922,7 @@ $adInfo
 
 # -----------------------------------------------------------------------------
 
+# Get LastLogon and LastLogonTimestamp attributes of all AD computer objects in an OU, and display them in a readable format
+Get-ADComputer -Filter "name -like 'esb-5101-*'" -SearchBase "OU=PHYS,OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu" -Properties * | Select Name,@{N='LastLogon'; E={[DateTime]::FromFileTime($_.LastLogonTimestamp)}},@{N='LastLogonTimestamp'; E={[DateTime]::FromFileTime($_.LastLogonTimestamp)}}
+
+# -----------------------------------------------------------------------------
