@@ -151,6 +151,14 @@ Import-Module "~/temp/powershell scripts/Test-ConnectionAsync.ps1m"
 
 # -----------------------------------------------------------------------------
 
+# Run gpupdate on multiple computers
+$compNames | ForEach-Object -ThrottleLimit 35 -Parallel {
+    Write-Host "Processing $($_)..."
+    Invoke-GPUpdate -Target "Computer" -Force -Computer $_
+}
+
+# -----------------------------------------------------------------------------
+
 # Add multiple computer objects with sequentially-numbered and zero-padded names to an OU in AD
 # e.g. "COMPUTER-NAME01", "COMPUTER-NAME02", etc.
 foreach($int in @(1..10)) {
