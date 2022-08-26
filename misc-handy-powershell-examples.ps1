@@ -938,3 +938,15 @@ $adInfo
 Get-ADComputer -Filter "name -like 'esb-5101-*'" -SearchBase "OU=PHYS,OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu" -Properties * | Select Name,@{N='LastLogon'; E={[DateTime]::FromFileTime($_.LastLogonTimestamp)}},@{N='LastLogonTimestamp'; E={[DateTime]::FromFileTime($_.LastLogonTimestamp)}}
 
 # -----------------------------------------------------------------------------
+
+# Create/set a system-level ("Machine"-level) environment variable:
+# https://www.delftstack.com/howto/powershell/powershell-refresh-environment-variables/
+# https://adamtheautomator.com/powershell-environment-variables/
+# https://www.itprotoday.com/powershell/powershell-one-liner-creating-and-modifying-environment-variable
+# https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables?view=powershell-7.2
+
+[Environment]::SetEnvironmentVariable("Name", "Value", "Machine")
+
+# -----------------------------------------------------------------------------
+
+
