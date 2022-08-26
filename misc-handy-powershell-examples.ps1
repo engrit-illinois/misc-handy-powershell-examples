@@ -939,13 +939,24 @@ Get-ADComputer -Filter "name -like 'esb-5101-*'" -SearchBase "OU=PHYS,OU=Instruc
 
 # -----------------------------------------------------------------------------
 
-# Create/set a system-level ("Machine"-level) environment variable:
+# Create/set/get/delete a system-level ("Machine"-level) environment variable:
 # https://www.delftstack.com/howto/powershell/powershell-refresh-environment-variables/
 # https://adamtheautomator.com/powershell-environment-variables/
 # https://www.itprotoday.com/powershell/powershell-one-liner-creating-and-modifying-environment-variable
+# https://www.digitalcitizen.life/remove-edit-clear-environment-variables/
 # https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_environment_variables?view=powershell-7.2
 
+# Note to manipulate system-level ("Machine"-level) scoped environment variables, you MUSt use the .NET syntax.
+# The variable syntax and Net/Set/Get-Item cmdlet syntax can only manipulate user/process/session scoped variables.
+
+# Create/set
 [Environment]::SetEnvironmentVariable("Name", "Value", "Machine")
+
+# Get
+[Environment]::GetEnvironmentVariable("Name","Machine")
+
+# Delete
+[Environment]::SetEnvironmentVariable("Name", "", "Machine")
 
 # -----------------------------------------------------------------------------
 
