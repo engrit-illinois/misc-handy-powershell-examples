@@ -152,9 +152,12 @@ Import-Module "~/temp/powershell scripts/Test-ConnectionAsync.ps1m"
 # -----------------------------------------------------------------------------
 
 # Run gpupdate on multiple computers
+# https://docs.microsoft.com/en-us/powershell/module/grouppolicy/invoke-gpupdate?view=windowsserver2022-ps
 $compNames | ForEach-Object -ThrottleLimit 35 -Parallel {
     Write-Host "Processing $($_)..."
-    Invoke-GPUpdate -Target "Computer" -Force -Computer $_
+    Invoke-GPUpdate -Force -Computer $_ # Both computer and user policy
+    # Invoke-GPUpdate -Target "Computer" -Force -Computer $_ # Computer policy only
+    # Invoke-GPUpdate -Target "User" -Force -Computer $_ # User policy only
 }
 
 # -----------------------------------------------------------------------------
