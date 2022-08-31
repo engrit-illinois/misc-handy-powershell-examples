@@ -152,6 +152,8 @@ Import-Module "~/temp/powershell scripts/Test-ConnectionAsync.ps1m"
 # -----------------------------------------------------------------------------
 
 # Run gpupdate on multiple computers
+
+# The following only works on client computers with PS 6.0+
 # https://docs.microsoft.com/en-us/powershell/module/grouppolicy/invoke-gpupdate?view=windowsserver2022-ps
 $compNames | ForEach-Object -ThrottleLimit 35 -Parallel {
     Write-Host "Processing $($_)..."
@@ -159,6 +161,13 @@ $compNames | ForEach-Object -ThrottleLimit 35 -Parallel {
     # Invoke-GPUpdate -Target "Computer" -Force -Computer $_ # Computer policy only
     # Invoke-GPUpdate -Target "User" -Force -Computer $_ # User policy only
 }
+
+# The following works on client computers with PS 5.1
+$compNames | ForEach-Object -ThrottleLimit 35 -Parallel {
+    Write-Host "Processing $($_)..."
+    Invoke-Command -ComputerName $_ -ScriptBlock { echo "n" | gpupdate /force }
+}
+
 
 # -----------------------------------------------------------------------------
 
