@@ -153,9 +153,17 @@ Import-Module "~/temp/powershell scripts/Test-ConnectionAsync.ps1m"
 
 # Run gpupdate on multiple computers
 
+$lab = "ECEB-9999"
+$nums = @(4,5,7,11,14)
+$comps = @()
+$nums | ForEach-Object {
+    $num = ([string]$_).PadLeft(2,"0")
+    $comps += "$lab-$($num)"
+}
+
 # The following only works on client computers with PS 6.0+
 # https://docs.microsoft.com/en-us/powershell/module/grouppolicy/invoke-gpupdate?view=windowsserver2022-ps
-$compNames | ForEach-Object -ThrottleLimit 35 -Parallel {
+$comps | ForEach-Object -ThrottleLimit 35 -Parallel {
     Write-Host "Processing $($_)..."
     Invoke-GPUpdate -Force -Computer $_ # Both computer and user policy
     # Invoke-GPUpdate -Target "Computer" -Force -Computer $_ # Computer policy only
@@ -163,7 +171,7 @@ $compNames | ForEach-Object -ThrottleLimit 35 -Parallel {
 }
 
 # The following works on client computers with PS 5.1
-$compNames | ForEach-Object -ThrottleLimit 35 -Parallel {
+$comps | ForEach-Object -ThrottleLimit 35 -Parallel {
     Write-Host "Processing $($_)..."
     Invoke-Command -ComputerName $_ -ScriptBlock { echo "n" | gpupdate /force }
 }
