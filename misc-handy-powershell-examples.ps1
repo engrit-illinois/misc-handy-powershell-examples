@@ -40,11 +40,11 @@ $comps.Name | ForEach-Object -ThrottleLimit 15 -Parallel {
 # -----------------------------------------------------------------------------
 
 # Create a new shortcut
-$pathLNK = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Protege.lnk"
+$pathLnk = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Protege.lnk"
 $pathTarget = "C:\Program Files\Protege.exe"
 
 $shell = New-Object -ComObject WScript.Shell
-$shortcut = $shell.CreateShortcut($pathLNK)
+$shortcut = $shell.CreateShortcut($pathLnk)
 $shortcut.TargetPath = $pathTarget
 $shortcut.Save()
 
