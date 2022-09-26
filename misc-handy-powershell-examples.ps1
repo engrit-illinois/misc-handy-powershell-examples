@@ -804,6 +804,20 @@ else {
 
 # -----------------------------------------------------------------------------
 
+# Get monitor information
+# https://learn.microsoft.com/en-us/answers/questions/216983/how-to-get-the-serial-number-of-the-monitors-using.html
+
+$monitors = Get-CimInstance -ClassName "WmiMonitorID" -Namespace "root\wmi" -ComputerName "computer-name" | Select *
+$monitors | ForEach-Object {
+    $_ | Add-Member -NotePropertyName "Make" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.ManufacturerName).Trim(0x00))
+    $_ | Add-Member -NotePropertyName "ModelNum" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.ProductCodeID).Trim(0x00))
+    $_ | Add-Member -NotePropertyName "Serial" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.SerialNumberID).Trim(0x00))
+    $_ | Add-Member -NotePropertyName "ModelName" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.UserFriendlyName).Trim(0x00))
+    $_
+} | Select PSComputerName,Active,Make,ModelName,ModelNum,Serial,WeekOfManufacture,YearOfManufacture,InstanceName | Format-Table
+
+# -----------------------------------------------------------------------------
+
 # Count the number of lines, words, and characters across all text files in a given directory, with given extensions:
 $path = ".\*"
 $include = "*.php","*.js","*.html","*.ps1"
