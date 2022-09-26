@@ -788,6 +788,20 @@ $monitors | Where { $_.Caption -notlike "*remote*" } | Select PSComputerName,Cap
 
 # -----------------------------------------------------------------------------
 
+# Get monitor information
+# https://learn.microsoft.com/en-us/answers/questions/216983/how-to-get-the-serial-number-of-the-monitors-using.html
+
+$monitors = Get-CimInstance -ClassName "WmiMonitorID" -Namespace "root\wmi" -ComputerName "computer-name" | Select *
+$monitors | ForEach-Object {
+    $_ | Add-Member -NotePropertyName "Make" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.ManufacturerName).Trim(0x00))
+    $_ | Add-Member -NotePropertyName "ModelNum" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.ProductCodeID).Trim(0x00))
+    $_ | Add-Member -NotePropertyName "Serial" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.SerialNumberID).Trim(0x00))
+    $_ | Add-Member -NotePropertyName "ModelName" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.UserFriendlyName).Trim(0x00))
+    $_
+} | Select PSComputerName,Active,Make,ModelName,ModelNum,Serial,WeekOfManufacture,YearOfManufacture,InstanceName | Format-Table
+
+# -----------------------------------------------------------------------------
+
 # This example shows both how to pull the most recently-modified file matching a given name
 # and how to check if a text file contains a specific string
 
@@ -801,20 +815,6 @@ if($content | Select-String -Pattern $string) {
 else {
 	Write-Host "The file `"$($latestLog.Name)`" does NOT contain the string `"$($string)`"."
 }
-
-# -----------------------------------------------------------------------------
-
-# Get monitor information
-# https://learn.microsoft.com/en-us/answers/questions/216983/how-to-get-the-serial-number-of-the-monitors-using.html
-
-$monitors = Get-CimInstance -ClassName "WmiMonitorID" -Namespace "root\wmi" -ComputerName "computer-name" | Select *
-$monitors | ForEach-Object {
-    $_ | Add-Member -NotePropertyName "Make" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.ManufacturerName).Trim(0x00))
-    $_ | Add-Member -NotePropertyName "ModelNum" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.ProductCodeID).Trim(0x00))
-    $_ | Add-Member -NotePropertyName "Serial" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.SerialNumberID).Trim(0x00))
-    $_ | Add-Member -NotePropertyName "ModelName" -NotePropertyValue ([System.Text.Encoding]::ASCII.GetString($_.UserFriendlyName).Trim(0x00))
-    $_
-} | Select PSComputerName,Active,Make,ModelName,ModelNum,Serial,WeekOfManufacture,YearOfManufacture,InstanceName | Format-Table
 
 # -----------------------------------------------------------------------------
 
