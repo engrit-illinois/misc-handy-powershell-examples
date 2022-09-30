@@ -12,13 +12,22 @@ Exit
 # To do them NOT in parallel, just remove the -ThrottleLimit and -Parallel parameters from ForEach-Object
 
 # ...based on specific given computer names
-$comps = "MEL-1001-10","KH-105-03","KH-107-03","EH-406B8-28"... # etc., etc.
+$compNames = "MEL-1001-10","KH-105-03","KH-107-03","EH-406B8-28"... # etc., etc.
 
 # ...based on an AD name query
 $comps = Get-ADComputer -Filter { Name -like "gelib-4c-*" }
 
-# ...based on direct membership rules of an MECM collection (requires Powershell 5.1)
-$comps = Get-CMCollectionDirectMembershipRule -CollectionName "UIUC-ENGR-IS Temp Matlab R2018b/R2019a removal" | Select -ExpandProperty RuleName
+# ...based on one or more AD name queries
+$queries = "gelib-4c-*","dcl-l426-*","mel-1001-01"
+$searchbase="OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
+$comps = @()
+foreach($query in @($queries)) {
+	$results = Get-ADComputer -SearchBase $searchbase -Filter "name -like `"$query`"" -Properties *
+	$comps += @($results)
+}
+
+# ...based on direct membership rules of an MECM collection
+$compNames = Get-CMCollectionDirectMembershipRule -CollectionName "UIUC-ENGR-IS mseng3 Test VMs (direct membership)" | Select -ExpandProperty RuleName | Sort
 
 # ...based on sequentially-named computers (i.e. a lab)
 $lab = "ECEB-9999"
@@ -30,7 +39,8 @@ $nums | ForEach-Object {
 }
 
 # Doing the thing
-$comps.Name | ForEach-Object -ThrottleLimit 15 -Parallel {
+$compNames = $comps | Select -ExpandProperty "Name" # if the members of $comps are AD or otherwise PowerShell object, instead of just strings
+$compNames | ForEach-Object -ThrottleLimit 15 -Parallel {
     Write-Host "Processing $_..."
     Invoke-Command -ComputerName $_ -ScriptBlock {
         # Do stuff here
