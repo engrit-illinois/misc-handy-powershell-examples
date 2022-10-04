@@ -762,7 +762,7 @@ Invoke-WebRequest -Uri $source -OutFile (New-Item -Path $destination -Force) -Cr
 # Test if the machine is properly domain-joined:
 Test-ComputerSecureChannel # returns $true if so, $false if not
 # Repair it
-Test-ComputerSecureChannel -repair -credential "uofi\mseng3" # also returns $true if so, $false if not
+Test-ComputerSecureChannel -Repair -Credential "uofi\mseng3" # also returns $true if so, $false if not
 # Test again
 Test-ComputerSecureChannel # should return $true now
 
