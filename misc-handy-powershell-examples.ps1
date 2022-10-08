@@ -1004,4 +1004,8 @@ Get-ADComputer -Filter "name -like 'esb-5101-*'" -SearchBase "OU=PHYS,OU=Instruc
 
 # -----------------------------------------------------------------------------
 
+# Re-use an existing function in the parent scope/runspace inside a ForEach-Object -Parallel loop:
+# https://tighetec.co.uk/2022/06/01/passing-functions-to-foreach-parallel-loop/
+
+# -----------------------------------------------------------------------------
 
