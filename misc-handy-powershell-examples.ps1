@@ -1022,5 +1022,10 @@ $revs = $comps | ForEach-Object -Parallel {
 }
 $revs | Select Computer,CurrentMajorVersionNumber,CurrentMinorVersionNumber,CurrentBuild,CurrentBuildNumber,UBR,DisplayVersion,ReleaseId | Sort Computer | Format-Table
 
+# P.S. Microsoft appears to have deprecated the "ReleaseId" property, in favor of "DisplayVersion".
+# https://learn.microsoft.com/en-us/answers/questions/162274/confused-about-windows-10-release-id.html
+# https://borncity.com/win/2021/05/26/windows-10-21h1-reports-releaseid-2009/
+# https://forum.bigfix.com/t/windows-10-releaseid-or-display-version/38226/3
+
 # -----------------------------------------------------------------------------
 
