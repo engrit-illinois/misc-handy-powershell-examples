@@ -1009,3 +1009,18 @@ Get-ADComputer -Filter "name -like 'esb-5101-*'" -SearchBase "OU=PHYS,OU=Instruc
 
 # -----------------------------------------------------------------------------
 
+# Get extended OS version info, including build revision number (UBR):
+
+$comps = Get-ADComputer -SearchBase "OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu" -Filter "name -like 'gelib-057-*'" | Select -ExpandProperty Name
+$creds = Get-Credential "uofi\mseng3"
+$revs = $comps | ForEach-Object -Parallel {
+	$creds = $using:creds
+	Write-Host "Processing $_..."
+	$data = Invoke-Command -Credential $creds -ComputerName $_ -ScriptBlock { Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' }
+	$data | Add-Member -NotePropertyName "Computer" -NotePropertyValue $_
+	$data
+}
+$revs | Select Computer,CurrentMajorVersionNumber,CurrentMinorVersionNumber,CurrentBuild,CurrentBuildNumber,UBR,DisplayVersion,ReleaseId | Sort Computer | Format-Table
+
+# -----------------------------------------------------------------------------
+
