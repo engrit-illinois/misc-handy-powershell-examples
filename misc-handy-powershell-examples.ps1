@@ -1027,6 +1027,26 @@ $revs | Select Computer,CurrentMajorVersionNumber,CurrentMinorVersionNumber,Curr
 # https://borncity.com/win/2021/05/26/windows-10-21h1-reports-releaseid-2009/
 # https://forum.bigfix.com/t/windows-10-releaseid-or-display-version/38226/3
 
+# Here's a version that works for machines which don't have PSRemoting configured, and can be authenticated via a local admin:
+function Get-OsBuild($comp) {
+	$creds = Get-Credential "$comp\Administrator"
+	
+	$hklm = 2147483650
+	$key = "SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+	
+	$wmi = Get-WMIObject -List "StdRegProv" -Namespace "root\default" -ComputerName $comp -Credential $creds
+	
+	$wmi.GetStringValue($hklm,$key,"ProductName").svalue
+	$wmi.GetStringValue($hklm,$key,"DisplayVersion").svalue
+	$wmi.GetStringValue($hklm,$key,"ReleaseId").svalue
+	$wmi.GetDWORDValue($hklm,$key,"CurrentMajorVersionNumber").uvalue
+	$wmi.GetDWORDValue($hklm,$key,"CurrentMinorVersionNumber").uvalue
+	$wmi.GetStringValue($hklm,$key,"CurrentBuild").svalue
+	$wmi.GetStringValue($hklm,$key,"CurrentBuildNumber").svalue
+	$wmi.GetDWORDValue($hklm,$key,"UBR").uvalue
+}
+Get-OsBuild "computer-name"
+
 # -----------------------------------------------------------------------------
 
 # Dynamically combine/merge properties from two objects into a single object
