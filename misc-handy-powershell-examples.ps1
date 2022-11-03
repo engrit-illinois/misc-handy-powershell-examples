@@ -1029,9 +1029,7 @@ $revs | Select Computer,CurrentMajorVersionNumber,CurrentMinorVersionNumber,Curr
 
 # -----------------------------------------------------------------------------
 
-# Dynamically combine properties from two objects
-# https://stackoverflow.com/questions/33380808/combine-object-properties-into-one-object-in-powershell
-# https://stackoverflow.com/questions/23719057/sort-properties-of-object-powershell
+# Dynamically combine/merge properties from two objects into a single object
 
 # In this example, we'll merge objectA INTO objectB
 $objectA = [PSCustomObject][ordered]@{ "prop1" = "string1"; "prop2" = 2 }
@@ -1041,6 +1039,7 @@ $objectB = [PSCustomObject][ordered]@{ "prop3" = "string3"; "prop4" = 4 }
 $objectB | Out-String
 
 # Merge objects:
+# https://stackoverflow.com/questions/33380808/combine-object-properties-into-one-object-in-powershell
 $objectAProps = $objectA | Get-Member -MemberType "NoteProperty"
 $objectAProps | ForEach-Object {
     $objectB | Add-Member -NotePropertyName $_.Name -NotePropertyValue $objectA.$($_.Name)
@@ -1049,6 +1048,7 @@ $objectB | Out-String
 
 # objectB's properties will be in the order they were added.
 # Sort objectB properties by their property name:
+# https://stackoverflow.com/questions/23719057/sort-properties-of-object-powershell
 $objectBProps = $objectB | Get-Member -MemberType "NoteProperty" | Select -ExpandProperty Name
 $objectB | Select $objectBProps | Out-String
 
