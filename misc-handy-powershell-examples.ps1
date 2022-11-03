@@ -1028,6 +1028,8 @@ $revs | Select Computer,CurrentMajorVersionNumber,CurrentMinorVersionNumber,Curr
 # https://forum.bigfix.com/t/windows-10-releaseid-or-display-version/38226/3
 
 # Here's a version that works for machines which don't have PSRemoting configured, and can be authenticated via a local admin:
+# https://stackoverflow.com/questions/7030887/how-to-get-the-data-from-a-value-from-the-registry-using-powershell
+# https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/new-itemproperty?view=powershell-7.2&viewFallbackFrom=powershell-7.1#parameters
 function Get-OsBuild($comp) {
 	$creds = Get-Credential "$comp\Administrator"
 	
