@@ -1030,6 +1030,8 @@ $revs | Select Computer,CurrentMajorVersionNumber,CurrentMinorVersionNumber,Curr
 # -----------------------------------------------------------------------------
 
 # Dynamically combine properties from two objects
+
+# In this example, we'll merge objectA INTO objectB
 $objectA = [PSCustomObject][ordered]@{ "prop1" = "string1"; "prop2" = 2 }
 $objectA | Out-String
 
