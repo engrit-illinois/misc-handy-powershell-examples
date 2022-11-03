@@ -1029,3 +1029,24 @@ $revs | Select Computer,CurrentMajorVersionNumber,CurrentMinorVersionNumber,Curr
 
 # -----------------------------------------------------------------------------
 
+# Dynamically combine properties from two objects
+$objectA = [PSCustomObject][ordered]@{ "prop1" = "string1"; "prop2" = 2 }
+$objectA | Out-String
+
+$objectB = [PSCustomObject][ordered]@{ "prop3" = "string3"; "prop4" = 4 }
+$objectB | Out-String
+
+# Merge objects:
+$objectAProps = $objectA | Get-Member -MemberType "NoteProperty"
+$objectAProps | ForEach-Object {
+    $objectB | Add-Member -NotePropertyName $_.Name -NotePropertyValue $objectA.$($_.Name)
+}
+$objectB | Out-String
+
+# objectB's properties will be in the order they were added.
+# Sort objectB properties by their property name:
+$objectBProps = $objectB | Get-Member -MemberType "NoteProperty" | Select -ExpandProperty Name
+$objectB | Select $objectBProps | Out-String
+
+# -----------------------------------------------------------------------------
+
