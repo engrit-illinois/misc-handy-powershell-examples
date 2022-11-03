@@ -1046,8 +1046,8 @@ $objectAProps | ForEach-Object {
 }
 $objectB | Out-String
 
-# objectB's properties will be in the order they were added.
-# Sort objectB properties by their property name:
+# objectB's properties will be in the order they were added (e.g. prop 3, prop 4, prop 1, prop 2).
+# Let's sort objectB's properties by their property name:
 # https://stackoverflow.com/questions/23719057/sort-properties-of-object-powershell
 $objectBProps = $objectB | Get-Member -MemberType "NoteProperty" | Select -ExpandProperty Name
 $objectB | Select $objectBProps | Out-String
