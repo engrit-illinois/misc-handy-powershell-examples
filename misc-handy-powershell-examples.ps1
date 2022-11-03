@@ -1030,6 +1030,8 @@ $revs | Select Computer,CurrentMajorVersionNumber,CurrentMinorVersionNumber,Curr
 # -----------------------------------------------------------------------------
 
 # Dynamically combine properties from two objects
+# https://stackoverflow.com/questions/33380808/combine-object-properties-into-one-object-in-powershell
+# https://stackoverflow.com/questions/23719057/sort-properties-of-object-powershell
 
 # In this example, we'll merge objectA INTO objectB
 $objectA = [PSCustomObject][ordered]@{ "prop1" = "string1"; "prop2" = 2 }
