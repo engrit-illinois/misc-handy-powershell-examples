@@ -201,10 +201,11 @@ foreach($int in @(1..10)) {
 # -----------------------------------------------------------------------------
 
 # Rename a single computer and immediately restart
-# Remove the -Restart parameter to not restart
-Invoke-Command -ComputerName "COMP-NAME-OLD" -ScriptBlock {
-	Rename-Computer -NewName "COMP-NAME-NEW" -DomainCredential "uofi\su-netid"
-	Restart-Computer
+$creds = Get-Credential "uofi\su-netid"
+Invoke-Command -ComputerName "SIEBL-4107-01" -ArgumentList $creds -ScriptBlock {
+    param($creds)
+    Rename-Computer -NewName "NCSA-1104-01" -DomainCredential $creds
+    Restart-Computer
 }
 
 # -----------------------------------------------------------------------------
