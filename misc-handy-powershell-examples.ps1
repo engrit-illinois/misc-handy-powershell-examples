@@ -769,6 +769,34 @@ Test-ComputerSecureChannel # should return $true now
 
 # -----------------------------------------------------------------------------
 
+# Join computer to domain while creating a new, currently-non-existent AD object, in a specified OU:
+# https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/add-computer?view=powershell-5.1
+
+# Especially helpful after MS hardening change requiring join actions to be performed by the same account which created the object.
+# https://support.microsoft.com/en-au/topic/kb5020276-netjoin-domain-join-hardening-changes-2b65a0f3-1f4c-42ef-ac0f-1caaf421baf8
+# https://www.anoopcnair.com/fix-kb5020276-domain-join-hardening-changes/
+
+# Local computer
+Add-Computer -DomainName "ad.uillinois.edu" -OUPath "OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu" -Force
+# Note: -Force suppresses confirmation prompt
+
+# For a remote computer, add:
+-ComputerName "comp-name-01"
+
+# If your current user doesn't have local admin permissions on the target machine, add:
+-LocalCredential "comp-name-01\admin"
+
+# If your current user doesn't have permissions to create objects in the target OU, add one of:
+-Credential "uofi\netid"
+-Credential "uofi\su-netid"
+
+# If you want to restart the machine immediately afterward, add:
+-Restart
+# or use a second line like:
+Restart-Computer -ComputerName "comp-name-01" [-Force]
+
+# -----------------------------------------------------------------------------
+
 # Force a computer to re-register its IP with AD DNS
 # For when pinging a computer by it's NETBIOS name, or FQDN returns "Ping request could not find host <computer-name>.ad.uillinois.edu. Please check the name and try again.".
 
