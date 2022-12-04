@@ -1105,3 +1105,16 @@ $objectB | Select $objectBProps | Out-String
 
 # -----------------------------------------------------------------------------
 
+# Handy function for quickly returning the Distinguished Name (OUDN) and Canonical Name of OUs with a matching Name:
+# Useful because many AD cmdlets have a "-SearchBase" parameter which accepts an OUDN.
+
+function Get-Ou($name) {
+	$ous = Get-ADOrganizationalUnit -Filter "name -like '$name'" -Properties *
+	$ous | Select Name,CanonicalName,DistinguishedName
+}
+
+# Support wildcards, e.g.:
+Get-Out "*name*"
+
+# -----------------------------------------------------------------------------
+
