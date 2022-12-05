@@ -670,59 +670,9 @@ $bmp.Save($iconPath,"icon")
 # -----------------------------------------------------------------------------
 
 # Get info from Lens API
-# For a more fully-featured module of this, see: https://github.com/engrit-illinois/Get-LensInfo
 
-function Get-LensData {
-	param(
-		[string]$DataType,
-		[string]$Query,
-		[switch]$All,
-		[PSCredential]$Credential
-	)
-	function Get-LensHeaders {
-		$creds = $Credential
-		if(-not $creds) { $creds = Get-Credential }
-		$user = $creds.UserName
-		$pass = $creds.GetNetworkCredential().Password
-		$credsString = "${user}:${pass}"
-		$bytes = [System.Text.Encoding]::ASCII.GetBytes($credsString)
-		$base64 = [System.Convert]::ToBase64String($bytes)
-		$basicAuthValue = "Basic $base64"
-		$headers = @{ Authorization = $basicAuthValue }
-		$headers
-	}
-	function Get-LensUri($dataType, $query) {
-		$baseUrl = "https://lens-api.cites.illinois.edu/lens/uiuc-lens"
-		$contentType = "content-type=application/json"
-		$uri = $baseUrl + "/" + $dataType + "?" + $query + "&" + $contentType
-		$uri
-	}
-	$headers = Get-LensHeaders
-	$uri = Get-LensUri $DataType $Query
-	$results = Invoke-RestMethod -Uri $uri -Headers $headers -Method "get"
-	if($All) { return $results }
-	$resultId = $results.result
-	$result = $results.objects.$dataType.$resultId
-	$result
-}
-
-# Examples:
-
-# Get mac_port info of MAC
-Get-LensData -DataType "mac_port" -Query "mac=C8F750D03D07"
-
-# Get device (i.e. switch) info of switch
-Get-LensData -DataType "device" -Query "device_name=sw-grainger5"
-
-# Get interface (i.e. switch port) info of switch port
-Get-LensData -DataType "interface" -Query "device_name=sw-grainger5&ifname=C24"
-
-# Get subnet info of CIDR-formatted subnet range
-Get-LensData -DataType "subnet" -Query "subnet=130.126.253.64/26"
-
-# List of data (a.k.a. object) types:
-# https://answers.uillinois.edu/illinois/48347
-# See table of "Essential attributes" on any given object type page for a list of properties that can be queried for that object type
+# Moved to its own module here: https://github.com/engrit-illinois/Get-LensObject
+# For pulling info about a specific computer, see: https://github.com/engrit-illinois/Get-LensInfo
 
 # -----------------------------------------------------------------------------
 
