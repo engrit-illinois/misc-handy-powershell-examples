@@ -234,6 +234,24 @@ foreach($int in @(1..10)) {
 
 # -----------------------------------------------------------------------------
 
+# If you get one of the following errors when trying to rename a computer:
+
+# When renaming using the GUI:
+# “The PC name can’t be updated in Azure Active Directory.”
+
+# When renaming via the Rename-Computer PowerShell cmdlet:
+# "Fail to rename computer '<old name>' to '<new name>' due to the following exception: Unable to update hostname in Azure AD. Check the event log for detailed error information."
+
+# Then run this command in an elevated prompt:
+dsregcmd /leave
+
+# And then rename as usual using commands documented above.
+# I came across this error when attempting to swap the names of two computers.
+# I renamed the first computer to a 3rd temp name, and then accidentally renamed the second computer to the first computer's original name before the first computer had a chance to complete its rename.
+# The second computer then showed these errors anytime I tried to rename it again, until I used the fix above.
+
+# -----------------------------------------------------------------------------
+
 # Find GPO named like...
 $gpos = Get-GPO -All -Domain "ad.uillinois.edu"
 $gpos | Where { $_.DisplayName -like "engr ews*license*" } | Select DisplayName,Id
