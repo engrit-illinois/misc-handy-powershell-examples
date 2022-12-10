@@ -501,8 +501,13 @@ foreach($item in $targetItems) {
 
 # -----------------------------------------------------------------------------
 
-; Quick and dirty AHK script to automate removing credential entries from the Windows Credential Manager GUI.
-; Mostly because the cmdkey.exe executable (which can properly automate this), doesn't support deleting entries with special characters like parentheses and combinations of hyphens and spaces.
+; # Quick and dirty AHK script to automate removing credential entries from the Windows Credential Manager GUI.
+; # Mostly because the cmdkey.exe executable (which can properly automate this), doesn't support deleting entries with special characters like parentheses and combinations of hyphens and spaces.
+; # https://stackoverflow.com/questions/51565300/cmdkey-delete-credentials-with-dashes-and-spaces-on-the-name
+; # https://social.technet.microsoft.com/forums/Exchange/en-US/3cca73c6-20ad-4958-a2e0-71613959917b/cmdkey-syntax?forum=ITCG
+
+; # Update: For an easier way, see: https://forflukesake.co.za/wp/clear-credential-manager-fast/
+; # Enter "rundll32.exe keymgr.dll, KRShowKeyMgr" to open a dialog which contains a similar list, and you can use Alt+R and Enter to clear out many entries quickly.
 
 #NoEnv
 #SingleInstance Force
