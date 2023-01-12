@@ -171,6 +171,12 @@ $nums | ForEach-Object {
     $comps += "$lab-$($num)"
 }
 
+# The following works on client computers with PS 5.1+
+$comps | ForEach-Object -ThrottleLimit 35 -Parallel {
+    Write-Host "Processing $($_)..."
+    Invoke-Command -ComputerName $_ -ScriptBlock { echo "n" | gpupdate /force }
+}
+
 # The following only works on client computers with PS 6.0+
 # https://docs.microsoft.com/en-us/powershell/module/grouppolicy/invoke-gpupdate?view=windowsserver2022-ps
 $comps | ForEach-Object -ThrottleLimit 35 -Parallel {
@@ -178,12 +184,6 @@ $comps | ForEach-Object -ThrottleLimit 35 -Parallel {
     Invoke-GPUpdate -Force -Computer $_ # Both computer and user policy
     # Invoke-GPUpdate -Target "Computer" -Force -Computer $_ # Computer policy only
     # Invoke-GPUpdate -Target "User" -Force -Computer $_ # User policy only
-}
-
-# The following works on client computers with PS 5.1
-$comps | ForEach-Object -ThrottleLimit 35 -Parallel {
-    Write-Host "Processing $($_)..."
-    Invoke-Command -ComputerName $_ -ScriptBlock { echo "n" | gpupdate /force }
 }
 
 
