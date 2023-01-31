@@ -101,6 +101,11 @@ Get-ADComputer -Filter "Name -like 'eh-406b*'" | Select -ExpandProperty Name | F
 
 # -----------------------------------------------------------------------------
 
+# Get the (human-readable) total size of all files in a given directory
+"{0:N} MB" -f ([math]::Round(((Get-ChildItem "\\comp-name-01\c$\users\netid" -Recurse -Force | Measure-Object -Property Length -Sum | Select -ExpandProperty Sum) / 1MB), 2))
+
+# -----------------------------------------------------------------------------
+
 # Disk cleaning actions
 
 $lab = "ECEB-9999"
