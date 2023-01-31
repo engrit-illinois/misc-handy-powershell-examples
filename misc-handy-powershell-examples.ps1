@@ -1096,3 +1096,21 @@ Get-Out "*name*"
 
 # -----------------------------------------------------------------------------
 
+# Get Lens info for multiple machines
+
+# Lens creds
+$creds = Get-Credential "mseng3"
+# Computer name query
+$query = "eh-406b*-*"
+
+$comps = Get-ADComputer -SearchBase $searchbase -Filter "name -like `"$query`"" -Properties * | Select -ExpandProperty Name
+$results = $comps | ForEach-Object -Parallel {
+    # See: https://github.com/engrit-illinois/Get-LensInfo
+    Get-LensInfo -ComputerName $_ -Credential $using:creds
+}
+
+# e.g. to select just the Name and switch of each machine:
+$results | Select Name,Switch | Sort Name
+
+# -----------------------------------------------------------------------------
+
