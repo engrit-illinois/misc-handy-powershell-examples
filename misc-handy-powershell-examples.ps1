@@ -83,11 +83,9 @@ Invoke-Command -ComputerName "computer-name" -ScriptBlock { fsutil file createne
 
 # -----------------------------------------------------------------------------
 
-# Find large files
+# Find 10 largest files
 # https://social.technet.microsoft.com/Forums/ie/en-US/838ed753-2bcf-49b8-9321-775c5ef12f13/finding-largest-files?forum=winserverpowershell
-Get-ChildItem "c:\temp\*" -Recurse -File | Sort "length" -Descending | Select "length","fullname" -First 10 #10 largest
-# Alias
-dir "c:\temp\*" -Recurse -File | Sort "length" -Descending | Select "length","fullname" -First 10
+Get-ChildItem "c:\users\" -Recurse -File | Sort "length" -Descending | Select @{Name="Size";Expression={"$([math]::Round(($_.length / 1MB),2))MB"}},"FullName","CreationTime","LastWriteTime","LastAccessTime" -First 10 | Format-Table
 
 # -----------------------------------------------------------------------------
 
