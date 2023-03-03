@@ -1112,3 +1112,9 @@ $results | Select Name,Switch | Sort Name
 
 # -----------------------------------------------------------------------------
 
+# Demonstrate the Win10 problem which prevents identifying "old" user profiles for the purposes of deletion
+# See this link for details about the problem: https://techcommunity.microsoft.com/t5/windows-deployment/issue-with-date-modified-for-ntuser-dat/m-p/102438
+Get-ChildItem -Path "c:\users\*\ntuser.dat" -Hidden | Select "FullName","CreationTime","LastWriteTime","LastAccessTime" -First 50
+
+# -----------------------------------------------------------------------------
+
