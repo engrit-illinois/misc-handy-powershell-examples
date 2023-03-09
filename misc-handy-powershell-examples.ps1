@@ -106,19 +106,13 @@ Get-ADComputer -Filter "Name -like 'eh-406b*'" | Select -ExpandProperty Name | F
 
 # Disk cleaning actions
 
-$lab = "ECEB-9999"
-$nums = @(4,5,7,11,14)
-
-$comps = @()
-$nums | ForEach-Object {
-	$num = ([string]$_).PadLeft(2,"0")
-	$comps += "$lab-$($num)"
-}
+$comps = Get-ADComputer -Filter { Name -like "comp-name-*" }
 $ErrorActionPreference = 'SilentlyContinue'
 $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
 	Write-Host "Processing $($_)..."
 	Invoke-Command -ComputerName $_ -ScriptBlock {
-		
+		$ErrorActionPreference = 'SilentlyContinue'
+
 		# Empty recycle bin
 		# https://github.com/PowerShell/PowerShell/issues/6743
 		# https://serverfault.com/questions/822514/clear-recyclebin-on-remote-computer-fails
