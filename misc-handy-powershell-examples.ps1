@@ -109,7 +109,8 @@ Get-ADComputer -Filter "Name -like 'eh-406b*'" | Select -ExpandProperty Name | F
 $comps = Get-ADComputer -Filter { Name -like "comp-name-*" }
 $ErrorActionPreference = 'SilentlyContinue'
 $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
-	Write-Host "Processing $($_)..."
+        $ts = Get-Date -Format "HH:mm:ss"
+	Write-Host "[$ts] Processing $($_)..."
 	Invoke-Command -ComputerName $_ -ScriptBlock {
 		$ErrorActionPreference = 'SilentlyContinue'
 
@@ -146,6 +147,8 @@ $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
 			catch { }
 		}
 	}
+	$ts = Get-Date -Format "HH:mm:ss"
+	Write-Host "[$ts] Done processing $($_)."
 }
 
 # -----------------------------------------------------------------------------
