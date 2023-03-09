@@ -120,12 +120,13 @@ $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
 		Invoke-Command -ComputerName "computer-name" -ScriptBlock { Clear-RecycleBin -Force -DriveLetter C }
 	
 		# Delete temporary files
-		Remove-Item "c:\temp" -Recurse -Force -ErrorAction Ignore
-		Remove-Item "c:\windows\temp" -Recurse -Force -ErrorAction Ignore
+		Remove-Item "c:\temp" -Recurse -Force
+		Remove-Item "c:\windows\temp" -Recurse -Force
+		Remove-Item "c:\users\*\appdata\local\crashdumps\*" -Recurse -Force
 	
 		# Blow away default-location Dropbox folders
-		Remove-Item "c:\users\*\dropbox" -Recurse -Force -ErrorAction Ignore
-		Remove-Item "c:\users\*\AppData\Local\Dropbox" -Recurse -Force -ErrorAction Ignore
+		Remove-Item "c:\users\*\dropbox" -Recurse -Force
+		Remove-Item "c:\users\*\AppData\Local\Dropbox" -Recurse -Force
 	
 		# Run disk cleanup
 		# http://www.theservergeeks.com/how-todisk-cleanup-using-powershell/
