@@ -107,7 +107,7 @@ Get-ADComputer -Filter "Name -like 'eh-406b*'" | Select -ExpandProperty Name | F
 # Disk cleaning actions
 
 function Clean-TempFiles($ComputerNameQuery) {
-	$comps = Get-ADComputer -Filter { Name -like "$ComputerNameQuery" }
+	$comps = Get-ADComputer -Filter { Name -like $ComputerNameQuery }
 	$ErrorActionPreference = 'SilentlyContinue'
 	$comps | ForEach-Object -ThrottleLimit 15 -Parallel {
 		$ts = Get-Date -Format "HH:mm:ss"
