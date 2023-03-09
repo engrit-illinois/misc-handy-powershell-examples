@@ -106,51 +106,54 @@ Get-ADComputer -Filter "Name -like 'eh-406b*'" | Select -ExpandProperty Name | F
 
 # Disk cleaning actions
 
-$comps = Get-ADComputer -Filter { Name -like "comp-name-*" }
-$ErrorActionPreference = 'SilentlyContinue'
-$comps | ForEach-Object -ThrottleLimit 15 -Parallel {
-        $ts = Get-Date -Format "HH:mm:ss"
-	Write-Host "[$ts] Processing $($_)..."
-	Invoke-Command -ComputerName $_ -ScriptBlock {
-		$ErrorActionPreference = 'SilentlyContinue'
+function Clean-TempFiles($ComputerNameQuery) {
+	$comps = Get-ADComputer -Filter { Name -like "$ComputerNameQuery" }
+	$ErrorActionPreference = 'SilentlyContinue'
+	$comps | ForEach-Object -ThrottleLimit 15 -Parallel {
+		$ts = Get-Date -Format "HH:mm:ss"
+		Write-Host "[$ts] Processing $($_)..."
+		Invoke-Command -ComputerName $_ -ScriptBlock {
+			$ErrorActionPreference = 'SilentlyContinue'
 
-		# Empty recycle bin
-		# https://github.com/PowerShell/PowerShell/issues/6743
-		# https://serverfault.com/questions/822514/clear-recyclebin-on-remote-computer-fails
-		Clear-RecycleBin -Force -DriveLetter "C"
-	
-		# Delete temporary files
-		Remove-Item "c:\temp" -Recurse -Force
-		Remove-Item "c:\windows\temp" -Recurse -Force
-		Remove-Item "c:\users\*\appdata\local\crashdumps\*" -Recurse -Force
-	
-		# Blow away default-location Dropbox folders
-		Remove-Item "c:\users\*\dropbox" -Recurse -Force
-		Remove-Item "c:\users\*\AppData\Local\Dropbox" -Recurse -Force
-	
-		# Run disk cleanup
-		# http://www.theservergeeks.com/how-todisk-cleanup-using-powershell/
-		# Note: this sometimes hangs and doesn't always seem to have an effect, possibly due to waiting for user GUI interaction. Use with caution.
-		# Might be able to be improved with advice at the following link. I haven't had time to investigate.
-		# https://stackoverflow.com/questions/28852786/automate-process-of-disk-cleanup-cleanmgr-exe-without-user-intervention
-		$HKLM = [UInt32] “0x80000002”
-		$strKeyPath = “SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches”
-		$strValueName = “StateFlags0065”
-		$subkeys = gci -Path HKLM:\$strKeyPath -Name
-		foreach($subkey in $subkeys) {
-			try { New-ItemProperty -Path HKLM:\$strKeyPath\$subkey -Name $strValueName -PropertyType DWord -Value 2 -ErrorAction SilentlyContinue| Out-Null }
-			catch {}
-			try { Start-Process cleanmgr -ArgumentList “/sagerun:65” -Wait -NoNewWindow -ErrorAction SilentlyContinue -WarningAction SilentlyContinue }
-			catch { }
+			# Empty recycle bin
+			# https://github.com/PowerShell/PowerShell/issues/6743
+			# https://serverfault.com/questions/822514/clear-recyclebin-on-remote-computer-fails
+			Clear-RecycleBin -Force -DriveLetter "C"
+
+			# Delete temporary files
+			Remove-Item "c:\temp" -Recurse -Force
+			Remove-Item "c:\windows\temp" -Recurse -Force
+			Remove-Item "c:\users\*\appdata\local\crashdumps\*" -Recurse -Force
+
+			# Blow away default-location Dropbox folders
+			Remove-Item "c:\users\*\dropbox" -Recurse -Force
+			Remove-Item "c:\users\*\AppData\Local\Dropbox" -Recurse -Force
+
+			# Run disk cleanup
+			# http://www.theservergeeks.com/how-todisk-cleanup-using-powershell/
+			# Note: this sometimes hangs and doesn't always seem to have an effect, possibly due to waiting for user GUI interaction. Use with caution.
+			# Might be able to be improved with advice at the following link. I haven't had time to investigate.
+			# https://stackoverflow.com/questions/28852786/automate-process-of-disk-cleanup-cleanmgr-exe-without-user-intervention
+			$HKLM = [UInt32] “0x80000002”
+			$strKeyPath = “SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches”
+			$strValueName = “StateFlags0065”
+			$subkeys = gci -Path HKLM:\$strKeyPath -Name
+			foreach($subkey in $subkeys) {
+				try { New-ItemProperty -Path HKLM:\$strKeyPath\$subkey -Name $strValueName -PropertyType DWord -Value 2 -ErrorAction SilentlyContinue| Out-Null }
+				catch {}
+				try { Start-Process cleanmgr -ArgumentList “/sagerun:65” -Wait -NoNewWindow -ErrorAction SilentlyContinue -WarningAction SilentlyContinue }
+				catch { }
+			}
+			foreach($subkey in $subkeys) {
+				try { Remove-ItemProperty -Path HKLM:\$strKeyPath\$subkey -Name $strValueName | Out-Null }
+				catch { }
+			}
 		}
-		foreach($subkey in $subkeys) {
-			try { Remove-ItemProperty -Path HKLM:\$strKeyPath\$subkey -Name $strValueName | Out-Null }
-			catch { }
-		}
+		$ts = Get-Date -Format "HH:mm:ss"
+		Write-Host "[$ts] Done processing $($_)."
 	}
-	$ts = Get-Date -Format "HH:mm:ss"
-	Write-Host "[$ts] Done processing $($_)."
 }
+Clean-TempFiles "comp-name-*"
 
 # -----------------------------------------------------------------------------
 
