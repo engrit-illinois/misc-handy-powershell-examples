@@ -117,7 +117,7 @@ $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
 		# Empty recycle bin
 		# https://github.com/PowerShell/PowerShell/issues/6743
 		# https://serverfault.com/questions/822514/clear-recyclebin-on-remote-computer-fails
-		Invoke-Command -ComputerName "computer-name" -ScriptBlock { Clear-RecycleBin -Force -DriveLetter C }
+		Clear-RecycleBin -Force -DriveLetter "C"
 	
 		# Delete temporary files
 		Remove-Item "c:\temp" -Recurse -Force
