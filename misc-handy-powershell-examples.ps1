@@ -1139,3 +1139,21 @@ Get-ChildItem -Path "c:\users\*\ntuser.dat" -Hidden | Select "FullName","Creatio
 
 # -----------------------------------------------------------------------------
 
+# Test the current PowerShell version for compatibility checks
+
+function Test-SupportedPowershellVersion {
+	$ver = $Host.Version
+	Write-Host "Powershell version is `"$($ver.Major).$($ver.Minor)`"." -L 1
+	
+	# Return $true if 5.1, or $false otherwise
+	if(
+		($ver.Major -eq 5) -and
+		($ver.Minor -eq 1)
+	) {
+		return $true
+	}
+	return $false
+}
+
+# -----------------------------------------------------------------------------
+
