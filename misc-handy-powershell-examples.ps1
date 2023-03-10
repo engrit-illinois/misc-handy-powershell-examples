@@ -1013,6 +1013,22 @@ Get-ADComputer -Filter "name -like 'esb-5101-*'" -SearchBase "OU=PHYS,OU=Instruc
 # Re-use an existing function in the parent scope/runspace inside a ForEach-Object -Parallel loop:
 # https://tighetec.co.uk/2022/06/01/passing-functions-to-foreach-parallel-loop/
 
+# Define function
+function Test-Function($num) {
+	Write-Host "Test $num"
+}
+
+# Save function as string variable
+$testfunction = ${function:Test-Function}.ToString()
+ 
+@(1, 2, 3) | | ForEach-Object -Parallel {
+	# Recreate function in local parallel scope
+	${function:Test-Function} = $using:testfunction
+	
+	# Use function
+    	Test-Function $_
+}
+
 # -----------------------------------------------------------------------------
 
 # Get extended OS version info, including build revision number (UBR):
