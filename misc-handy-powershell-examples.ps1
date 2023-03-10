@@ -1014,8 +1014,9 @@ Get-ADComputer -Filter "name -like 'esb-5101-*'" -SearchBase "OU=PHYS,OU=Instruc
 # https://tighetec.co.uk/2022/06/01/passing-functions-to-foreach-parallel-loop/
 
 # Define function
-function Test-Function($num) {
-	Write-Host "Test $num"
+$letter = "A"
+function Test-Function($number) {
+	Write-Host "Test $letter $number"
 }
 
 # Save function as string variable
@@ -1024,6 +1025,9 @@ $testfunction = ${function:Test-Function}.ToString()
 @(1, 2, 3) | | ForEach-Object -Parallel {
 	# Recreate function in local parallel scope
 	${function:Test-Function} = $using:testfunction
+	
+	# Make sure to also define any parent-scope variables used by the function!
+	$letter = $using:letter
 	
 	# Use function
     	Test-Function $_
