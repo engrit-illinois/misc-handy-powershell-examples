@@ -1157,3 +1157,75 @@ function Test-SupportedPowershellVersion {
 
 # -----------------------------------------------------------------------------
 
+# Copy a folder to the local drive of multiple machines in a lab
+
+# Make this function available. See below for example usage.
+# Change the parameter default values if you want. Right now they are most convenient for Matt's VMs.
+function CopyFolderTo-Lab {
+	param(
+		[string]$Lab = "engrit-mms-tvm",
+		[string]$Separator = "",
+		[int[]]$Nums = @(0..9),
+		[int]$NumCharCount = 1,
+		[Parameter(Mandatory=$true)]
+		[string]$Source, # Should be the path to a folder without a trailing slash and without an asterisk
+		[string]$Destination = "c$",
+		[switch]$Force # Overwrite if destination path/files already exist
+	)
+	
+	function log($Msg, $L=0) {
+		$ts = Get-Date -Format "HH:mm:ss"
+		$indent = ""
+		for($i = 0; $i -lt $L; $i += 1) {
+			$indent = "    $indent"
+		}
+		Write-Host "[$($ts)]$($indent) $msg"
+	}
+	
+	log "Beginning copy of `"$Source`" to `"$Lab`" lab..."
+	
+	$logFunction = ${function:log}.ToString()	
+	$Nums | ForEach-Object -Parallel {
+		${function:log} = $using:logFunction
+		$Lab = $using:Lab
+		$Separator = $using:Separator
+		$NumCharCount = $using:NumCharCount
+		$Source = $using:Source
+		$Destination = $using:Destination
+		$Force = $using:Force
+		
+		$num = ([string]$_).PadLeft($NumCharCount,"0")
+		$comp = "$($Lab)$($Separator)$($num)"
+		
+		$dest = "\\$($comp)\$Destination"
+		
+		log "Copying to `"$dest`"..." 1
+		
+		# Must create destination folder if it doesn't exist, otherwise Copy-Item behaves differently:
+		# https://stackoverflow.com/questions/35288023/copy-item-behaves-differently-depending-on-whether-target-folder-exists
+		if(-not (Test-Path -PathType "Container" -Path $dest)) {
+			New-Item -ItemType "Directory" -Force -Path $dest | Out-Null
+		}
+		
+		$params = @{
+			Force = $Force
+		}
+		
+		Copy-Item -Path $Source -Destination $dest -Recurse -ErrorAction "Stop" @params
+	}
+	
+	log "Done copying."
+}
+
+# Examples
+
+# Copy "\\engr-wintools\packagedsoftware$\Lambda Research Corp\TracePro\23.10.23067" folder to C: drive on all Matt's test VMs
+# e.g. Results in "\\engrit-mms-tvm#\c$\23.10.23067"
+CopyFolderTo-Lab -Source "\\engr-wintools\packagedsoftware$\Lambda Research Corp\TracePro\23.10.23067"
+
+# Copy ".\test" folder to "C:\blah" on all 3 machines in NCEB-2ND lab
+# e.g. Results in "\\nceb-2nd-##\c$\blah\test"
+CopyFolderTo-Lab -Lab "nceb-2nd" -Separator "-" -Nums @(1..3) -NumCharCount 2 -Source ".\test" -Destination "c$\blah"
+
+# -----------------------------------------------------------------------------
+
