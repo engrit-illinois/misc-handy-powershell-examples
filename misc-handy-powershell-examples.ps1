@@ -1231,7 +1231,7 @@ CopyFolderTo-Lab -Lab "nceb-2nd" -Separator "-" -Nums @(1..3) -NumCharCount 2 -S
 
 # Find occurrences of a string in any text file in a folder
 # https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/findstr
-
+# https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/select-string?view=powershell-7.3
 Select-String -Path "\\engrit-mms-tvm0\c$\windows\ccm\logs\*.*" -Pattern "TracePro" | Select Filename,LineNumber,Line | Sort Filename,LineNumber | Format-Table -Wrap
 
 # -----------------------------------------------------------------------------
