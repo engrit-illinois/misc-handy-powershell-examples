@@ -1229,3 +1229,14 @@ CopyFolderTo-Lab -Lab "nceb-2nd" -Separator "-" -Nums @(1..3) -NumCharCount 2 -S
 
 # -----------------------------------------------------------------------------
 
+# Find occurrences of a string in any text file in a folder
+# https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/findstr
+
+# Find all occurrence of "TracePro" in all MECM logs on engrit-mms-tvm0:
+findstr /s /i TracePro \\engrit-mms-tvm0\c$\windows\ccm\logs\*.*
+
+# List only the files, omitting the actual content:
+findstr /s /i /m TracePro \\engrit-mms-tvm0\c$\windows\ccm\logs\*.*
+
+# -----------------------------------------------------------------------------
+
