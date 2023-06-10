@@ -1236,3 +1236,17 @@ Select-String -Path "\\engrit-mms-tvm0\c$\windows\ccm\logs\*.*" -Pattern "TraceP
 
 # -----------------------------------------------------------------------------
 
+# Quickly test for existence of a folder across many machines and output nicely formatted results
+$comps = Get-ADComputer -Filter "name -like 'gelib-4c-*'" -SearchBase "OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu" 
+$comps.Name | ForEach-Object -OutVariable "results" -Parallel {
+    Invoke-Command -ComputerName $_ -ScriptBlock {
+        [PSCustomObject]@{
+            Name = $env:computername
+            Exists = Test-Path -Path "c:\users\mseng3" -PathType "Container"
+        }
+    }
+} | Format-Table
+$results | Sort "Name" | Format-Table
+
+# -----------------------------------------------------------------------------
+
