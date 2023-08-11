@@ -790,6 +790,9 @@ Register-DnsClient
 $comp = "dcl-l416-05.ews.illinois.edu"
 ([WMIClass]"\\$comp\ROOT\CImv2:Win32_Process").Create("cmd.exe /c ipconfig /registerdns")
 
+# After doing the above, flush your local DNS cache (requires elevation):
+ipconfig /flushdns
+
 # -----------------------------------------------------------------------------
 
 # Get resolution of monitors in a lab
