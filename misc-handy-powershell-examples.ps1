@@ -1253,3 +1253,16 @@ $results | Sort "Name" | Format-Table
 
 # -----------------------------------------------------------------------------
 
+# Pull the status of a Windows Feature (.NET 3.5 in this case) from multiple machines
+$comps = Get-ADComputer -Filter "name -like 'mel-1001-*'"
+$comps | ForEach-Object -ThrottleLimit 25 -Parallel {
+    Invoke-Command -ComputerName $_.Name -ScriptBlock {
+        [PSCustomObject]@{
+            "Computer" = $env:ComputerName
+            ".NET3.5" = Get-WindowsOptionalFeature -Online -FeatureName "*NetFx3*" | Select -ExpandProperty "State"
+        }
+    }
+} | Select "Computer",".NET3.5" | Sort "Computer" | ft
+
+# -----------------------------------------------------------------------------
+
