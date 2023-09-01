@@ -166,6 +166,8 @@ Import-Module "~/temp/powershell scripts/Test-ConnectionAsync.ps1m"
 # -----------------------------------------------------------------------------
 
 # Run gpupdate on multiple computers
+# This has been turned into its own module here: https://github.com/engrit-illinois/GpUpdate-Computer
+# Kept here for reference, and because the module uses the 5.1+ code, while this snippet demonstrates 6.0+ code
 
 $lab = "ECEB-9999"
 $nums = @(4,5,7,11,14)
