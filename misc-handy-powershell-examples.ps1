@@ -1268,3 +1268,33 @@ $comps | ForEach-Object -ThrottleLimit 25 -Parallel {
 
 # -----------------------------------------------------------------------------
 
+# Export actual local CCTK config from each machine in a lab and export them to engr-wintools for review.
+# Relies on 3rd-party IT Pro machine to copy files back and forth, so that it works even for CBTF machines behind a firewall (assuming the IT Pro machine is excepted).
+
+$comps = Get-ADComputer -Filter "name -like 'siebl-0403a-*'" -SearchBase "OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
+
+$comps | ForEach-Object -ThrottleLimit 25 -Parallel {
+	$comp = $_.Name
+	
+	# Copy CCTK files to machine
+	$cctkExeSource = "\\engr-wintools\packagedsoftware$\ews-bios-configs\Dell\Command Configure\4.7"
+	$cctkExeDest = "\\$($comp)\c$\engrit\cctk"
+	New-Item -Path "\\$($comp)\c$\engrit" -Name "cctk" -ItemType "Directory" -Force
+	Copy-Item -Path $cctkExeSource -Destination $cctkExeDest -Recurse
+	
+	# Export CCTK config to local machine
+	Invoke-Command -ComputerName $comp -ScriptBlock {
+		$cctkExe = "c:\engrit\cctk\4.7\Command Configure\X86_64\cctk.exe"
+		$comp = $env:ComputerName
+		$exportPath = "c:\engrit\cctk\$($comp).cctk"
+		Start-Process -Wait -FilePath $cctkExe -ArgumentList "-o=$exportPath"
+	}
+	
+	# Copy CCTK config from machine to engr-wintools
+	$copyFrom = "\\$($comp)\c$\engrit\cctk\$($comp).cctk"
+	$copyTo = "\\engr-wintools\packagedsoftware$\ews-bios-configs\Dell\Precision-3460\CBTF-test"
+	Copy-Item -Path $copyFrom -Destination $copyTo
+}
+
+# -----------------------------------------------------------------------------
+
