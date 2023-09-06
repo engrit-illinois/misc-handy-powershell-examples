@@ -1287,6 +1287,7 @@ $comps | ForEach-Object -ThrottleLimit 25 -Parallel {
         $cctkExe = "c:\engrit\cctk\4.7\Command Configure\X86_64\cctk.exe"
         $comp = $env:ComputerName
         $exportPath = "c:\engrit\cctk\$($comp).cctk"
+	if(Test-Path $exportPath) { Remove-Item $exportPath -Force }
         Start-Process -Wait -FilePath $cctkExe -ArgumentList "-o=$exportPath"
     }
     
