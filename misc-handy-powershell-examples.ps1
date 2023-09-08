@@ -1299,3 +1299,39 @@ $comps | ForEach-Object -ThrottleLimit 25 -Parallel {
 
 # -----------------------------------------------------------------------------
 
+# Use CCTK to set or change Dell BIOS password
+
+$comp = "comp-name-01"
+$cctkVer = "4.7"
+$oldPass = "oldpassword"
+$newPass = "newpassword"
+
+$cctkExeSource = "\\engr-wintools\packagedsoftware$\ews-bios-configs\Dell\Command Configure\$($cctkVer)"
+$cctkExeDest = "\\$($comp)\c$\engrit\cctk"
+New-Item -Path "\\$($comp)\c$\engrit" -Name "cctk" -ItemType "Directory" -Force
+Copy-Item -Path $cctkExeSource -Destination $cctkExeDest -Recurse
+Invoke-Command -ComputerName $comp -ArgumentList $pass,$cctkVer -ScriptBlock {
+    param(
+        [string]$OldPass,
+	[string]$NewPass,
+        [string]$CctkVer
+    )
+    $cctkExe = "c:\engrit\cctk\$($CctkVer)\Command Configure\X86_64\cctk.exe"
+    & $cctkExe --setuppwd="$NewPass"
+}
+
+# The above sets the password on a machine that doesn't have it set
+
+# To change a password that's already set, replace
+& $cctkExe --setuppwd="$NewPass"
+# with:
+& $cctkExe --valsetuppwd="$OldPass" --setuppwd="$NewPass"
+
+# To change BIOS settings individually, replace
+& $cctkExe --setuppwd="$NewPass"
+# with:
+& $cctkExe --valsetuppwd="$OldPass" --autoonmn=1
+# See here for BIOS setting names: https://www.dell.com/support/manuals/en-us/command-configure/dellcommandconfigure_rg_4.x/bios-options?guid=guid-44c059be-b76d-4b2f-b8ef-655f736c40ce&lang=en-us
+
+# -----------------------------------------------------------------------------
+
