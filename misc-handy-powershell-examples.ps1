@@ -1299,12 +1299,27 @@ $comps | ForEach-Object -ThrottleLimit 25 -Parallel {
 
 # -----------------------------------------------------------------------------
 
-# Use CCTK to set or change Dell BIOS password
+# Use CCTK to import or export BIOS settings from a CCTK file, set or change individual settings, or set or change the BIOS password
 
 $comp = "comp-name-01"
 $cctkVer = "4.7"
 $oldPass = "oldpassword"
 $newPass = "newpassword"
+
+$RECOGNIZED_MODELS = @(
+	@{ Query = "*Precision*5810*"; Model = "Precision-5810"; CctkVer = "4.2" },
+	@{ Query = "*Precision*3420*"; Model = "Precision-3420"; CctkVer = "4.3" },
+	@{ Query = "*Precision*3620*"; Model = "Precision-3620"; CctkVer = "4.3" },
+	@{ Query = "*Precision*3430*"; Model = "Precision-3430"; CctkVer = "4.4" },
+	@{ Query = "*Precision*3630*"; Model = "Precision-3630"; CctkVer = "4.4" },
+	@{ Query = "*Precision*3431*"; Model = "Precision-3431"; CctkVer = "4.4" },
+	@{ Query = "*Precision*3440*"; Model = "Precision-3440"; CctkVer = "4.4" },
+	@{ Query = "*Precision*3450*"; Model = "Precision-3450"; CctkVer = "4.7" },
+	@{ Query = "*Precision*3650*"; Model = "Precision-3650"; CctkVer = "4.7" },
+	@{ Query = "*Precision*3460*"; Model = "Precision-3460"; CctkVer = "4.7" },
+	@{ Query = "*Precision*5820*"; Model = "Precision-5820"; CctkVer = "4.8.0.494" },
+	@{ Query = "*Precision*5860*"; Model = "Precision-5860"; CctkVer = "4.10.1.11" }
+)
 
 $cctkExeSource = "\\engr-wintools\packagedsoftware$\ews-bios-configs\Dell\Command Configure\$($cctkVer)"
 $cctkExeDest = "\\$($comp)\c$\engrit\cctk"
