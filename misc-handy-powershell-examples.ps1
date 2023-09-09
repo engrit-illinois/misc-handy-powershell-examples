@@ -1350,3 +1350,27 @@ Invoke-Command -ComputerName $comp -ArgumentList $pass,$cctkVer -ScriptBlock {
 
 # -----------------------------------------------------------------------------
 
+# This code is just a reminder and demonstration that PowerShell objects (but not primitives/strings) only contain a reference to the object in memory
+# To truly get a unique copy of an object you must actually clone the underlying object in some way, so as to create an entirely new object.
+# A simple way is demonstrated below. However note that this solution still only creates a "shallow" copy,
+# i.e. any properties of the successfully cloned parent object which themselves contain objects will still be holding pointers to the same underlying objects present in the original parent object's properties.
+# https://stackoverflow.com/a/60102611/994622
+# https://stackoverflow.com/questions/9581568/how-to-create-new-clone-instance-of-psobject-object
+# https://stackoverflow.com/questions/9204829/deep-copying-a-psobject/62559171#62559171
+
+# $hash2 is a "copy" of $hash1, but both variables actually just contain references to the same object in memory, so modifying $hash2 also modifies $hash1
+$hash1 = @{ foo = "apple" }
+$hash2 = $hash1
+$hash2.bar = "banana"
+Write-Host "`$hash1.bar = `"$($hash1.bar)`""
+# Returns "banana"
+
+# hash4 is a "real" copy of $hash3, i.e. both variables contain references to different objects in memory, thus modifying $hash4 does NOT also modify $hash3
+$hash3 = @{ foo = "apple" }
+$hash4 = $hash3.PSObject.Copy()
+$hash4.bar = "banana"
+Write-Host "`$hash3.bar = `"$($hash3.bar)`""
+# Returns nothing
+
+# -----------------------------------------------------------------------------
+
