@@ -1366,7 +1366,7 @@ $hash2.bar = "banana"
 Write-Host "`$hash1.bar = `"$($hash1.bar)`""
 # Returns "banana"
 
-# hash4 is a "real" copy of $hash3, i.e. both variables contain references to different objects in memory, thus modifying $hash4 does NOT also modify $hash3
+# $hash4 is a "real" copy of $hash3, i.e. both variables contain references to different objects in memory, thus modifying $hash4 does NOT also modify $hash3
 $hash3 = @{ foo = "apple" }
 $hash4 = $hash3.PSObject.Copy()
 $hash4.bar = "banana"
