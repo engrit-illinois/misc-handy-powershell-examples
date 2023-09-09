@@ -1357,6 +1357,7 @@ Invoke-Command -ComputerName $comp -ArgumentList $pass,$cctkVer -ScriptBlock {
 # https://stackoverflow.com/a/60102611/994622
 # https://stackoverflow.com/questions/9581568/how-to-create-new-clone-instance-of-psobject-object
 # https://stackoverflow.com/questions/9204829/deep-copying-a-psobject/62559171#62559171
+# https://www.reddit.com/r/PowerShell/comments/6rq03i/powershell_challenge_create_a_copy_of_a_hashtable/
 
 # $hash2 is a "copy" of $hash1, but both variables actually just contain references to the same object in memory, so modifying $hash2 also modifies $hash1
 $hash1 = @{ foo = "apple" }
