@@ -112,7 +112,7 @@ function Clean-TempFiles($ComputerNameQuery) {
 	$compsString = "`"" + ($comps.Name -join "`",`"") + "`""
 	Write-Host "    $compsString"
     $ErrorActionPreference = 'SilentlyContinue'
-    $comps | ForEach-Object -ThrottleLimit 15 -Parallel {
+    $comps | ForEach-Object -ThrottleLimit 25 -Parallel {
 		$comp = $_.Name
         $ts = Get-Date -Format "HH:mm:ss"
         Write-Host "[$ts] Processing $($comp)..."
