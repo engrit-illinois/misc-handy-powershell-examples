@@ -89,6 +89,21 @@ Get-ChildItem "c:\users\" -Recurse -File | Sort "length" -Descending | Select @{
 
 # -----------------------------------------------------------------------------
 
+# Find the largest user profiles grater than 1GB across multiple computers
+$comps = Get-ADComputer -Filter "name -like 'ncsab-1104-*'" -SearchBase "OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
+$data = $comps | ForEach-Object {
+	$comp = $_.Name
+	Invoke-Command -ComputerName $comp -ScriptBlock {
+		Get-Item -Path "c:\users\*" | ForEach-Object {
+			Get-ChildItem $_ -Recurse -File | Measure-Object -Property length -Sum -Maximum | Add-Member -NotePropertyName "User" -NotePropertyValue $_.Name -PassThru
+		}
+	}
+} | Select PSComputerName,User,Count,@{N="Max (GB)";E={[int]($_.Maximum/1GB)}},@{N="Sum (GB)";E={[int]($_.Sum/1GB)}}
+$data = $data | Where { $_."Sum (GB)" -ge 1 }
+$data | Sort PSComputerName,@{Expression="Sum (GB)";Descending=$true} | Format-Table
+
+# -----------------------------------------------------------------------------
+
 # Test whether a specific folder (or file, registry entry, etc.) exists on multiple computers
 Get-ADComputer -Filter "Name -like 'eh-406b*'" | Select -ExpandProperty Name | ForEach-Object -Parallel {
     [PSCustomObject]@{
