@@ -89,7 +89,7 @@ Get-ChildItem "c:\users\" -Recurse -File | Sort "length" -Descending | Select @{
 
 # -----------------------------------------------------------------------------
 
-# Find the largest user profiles grater than 1GB across multiple computers
+# Find the largest user profiles greater than 1GB across multiple computers
 $comps = Get-ADComputer -Filter "name -like 'ncsab-1104-*'" -SearchBase "OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
 $data = $comps | ForEach-Object {
 	$comp = $_.Name
