@@ -1397,13 +1397,32 @@ Write-Host "`$hash3.bar = `"$($hash3.bar)`""
 # -----------------------------------------------------------------------------
 
 # Get product code from MSI without installing app:
-$msi = "\\engr-wintools\packagedsoftware$\FreeFlyer\7.4\Installer\FreeFlyer_7.4.1.52527_Installer.msi"
-$log = "c:\mseng3-ctemp\temp-product-code-log.log"
-Start-Process -Wait -FilePath "msiexec.exe" -Argumentlist "/i",$msi,"/l*v",$log
-# Manually cancel out of the installer GUI
-$regex = '[\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12}'
-Select-String -Path $log -Pattern $regex
-Remove-Item -Path $log -Force
+
+function Get-MsiProductCode($msi) {
+	function log($msg) { Write-Host $msg }
+	log "`n`n`nMSI: `"$($msi)`":"
+	log "=============================================================================================================================================================="
+	
+	# Try with Get-AppLockerFileInformation
+	$app = Get-AppLockerFileInformation -Path $msi
+	log "`nAppLockerFileInformation:"
+	log "-------------------------"
+	$app | Format-List
+
+	# Try by making the MSI generate a log and parsing it
+	$log = "c:\mseng3-ctemp\temp-product-code-log.log"
+	# Just manually cancel out of the installer GUI when it launches; the log will still be generated
+	Start-Process -Wait -FilePath "msiexec.exe" -Argumentlist "/i",$msi,"/l*v",$log
+	$regex = '[\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12}'
+	$results = Select-String -Path $log -Pattern $regex
+	Remove-Item -Path $log -Force
+	log "`nLog info:"
+	log "---------"
+	$results
+	log "`n=============================================================================================================================================================="
+}
+
+Get-MsiProductCode "\\engr-wintools\packagedsoftware$\FreeFlyer\7.4\Installer\FreeFlyer_7.4.1.52527_Installer.msi"
 
 # -----------------------------------------------------------------------------
 
