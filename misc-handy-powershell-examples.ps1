@@ -1410,7 +1410,7 @@ function Get-MsiProductCode($msi) {
 	$app | Format-List
 
 	# Try by making the MSI generate a log and parsing it
-	$log = "c:\mseng3-ctemp\temp-product-code-log.log"
+	$log = "c:\engrit\logs\temp-product-code-log.log"
 	# Just manually cancel out of the installer GUI when it launches; the log will still be generated
 	Start-Process -Wait -FilePath "msiexec.exe" -Argumentlist "/i",$msi,"/l*v",$log
 	$regex = '[\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12}'
