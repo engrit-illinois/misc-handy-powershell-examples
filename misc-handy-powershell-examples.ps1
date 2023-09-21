@@ -1396,3 +1396,14 @@ Write-Host "`$hash3.bar = `"$($hash3.bar)`""
 
 # -----------------------------------------------------------------------------
 
+# Get product code from MSI without installing app:
+$msi = "\\engr-wintools\packagedsoftware$\FreeFlyer\7.4\Installer\FreeFlyer_7.4.1.52527_Installer.msi"
+$log = "c:\mseng3-ctemp\temp-product-code-log.log"
+Start-Process -Wait -FilePath "msiexec.exe" -Argumentlist "/i",$msi,"/l*v",$log
+# Manually cancel out of the installer GUI
+$regex = '[\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12}'
+Select-String -Path $log -Pattern $regex
+Remove-Item -Path $log -Force
+
+# -----------------------------------------------------------------------------
+
