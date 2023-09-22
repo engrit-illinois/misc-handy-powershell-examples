@@ -1426,3 +1426,13 @@ Get-MsiProductCode "\\engr-wintools\packagedsoftware$\FreeFlyer\7.4\Installer\Fr
 
 # -----------------------------------------------------------------------------
 
+# Enable multi-line pasting in Windows Terminal
+
+$path = "$($env:LocalAppData)\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+$content = Get-Content $path | Out-String
+$regex = '{\s*"command": "paste",\s*"keys": "ctrl\+v"\s*},\s*'
+$newContent = $content -replace $regex,""
+$newContent | Set-Content $path
+
+# -----------------------------------------------------------------------------
+
