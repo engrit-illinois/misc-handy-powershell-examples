@@ -49,6 +49,13 @@ $compNames | ForEach-Object -ThrottleLimit 15 -Parallel {
 
 # -----------------------------------------------------------------------------
 
+# Start a new, elevated PowerShell process in the current directory:
+# Useful because Windows does not allow Powershell to  elevate an existing session
+# https://superuser.com/a/1256947/137753
+Start-Process powershell -Verb runas -ArgumentList "-NoExit -c cd '$pwd'"
+
+# -----------------------------------------------------------------------------
+
 # Create a new shortcut
 $pathLnk = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Protege.lnk"
 $pathTarget = "C:\Program Files\Protege.exe"
