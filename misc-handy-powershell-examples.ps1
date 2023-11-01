@@ -1296,85 +1296,8 @@ $comps | ForEach-Object -ThrottleLimit 25 -Parallel {
 
 # -----------------------------------------------------------------------------
 
-# Export actual local CCTK config from each machine in a lab and export them to engr-wintools for review.
-# Relies on 3rd-party IT Pro machine to copy files back and forth, so that it works even for CBTF machines behind a firewall (assuming the IT Pro machine is excepted).
-
-$comps = Get-ADComputer -Filter "name -like 'siebl-0403a-*'" -SearchBase "OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu" | Select -ExpandProperty Name
-
-$comps | ForEach-Object -ThrottleLimit 25 -Parallel {
-    $comp = $_
-    
-    # Copy CCTK files to machine
-    $cctkExeSource = "\\engr-wintools\packagedsoftware$\ews-bios-configs\Dell\Command Configure\4.7"
-    $cctkExeDest = "\\$($comp)\c$\engrit\cctk"
-    New-Item -Path "\\$($comp)\c$\engrit" -Name "cctk" -ItemType "Directory" -Force
-    Copy-Item -Path $cctkExeSource -Destination $cctkExeDest -Recurse
-    
-    # Export CCTK config to local machine
-    Invoke-Command -ComputerName $comp -ScriptBlock {
-        $cctkExe = "c:\engrit\cctk\4.7\Command Configure\X86_64\cctk.exe"
-        $comp = $env:ComputerName
-        $exportPath = "c:\engrit\cctk\$($comp).cctk"
-	if(Test-Path $exportPath) { Remove-Item $exportPath -Force }
-        Start-Process -Wait -FilePath $cctkExe -ArgumentList "-o=$exportPath"
-    }
-    
-    # Copy CCTK config from machine to engr-wintools
-    $copyFrom = "\\$($comp)\c$\engrit\cctk\$($comp).cctk"
-    $copyTo = "\\engr-wintools\packagedsoftware$\ews-bios-configs\Dell\Precision-3460\CBTF-test"
-    Copy-Item -Path $copyFrom -Destination $copyTo
-}
-
-# -----------------------------------------------------------------------------
-
-# Use CCTK to import or export BIOS settings from a CCTK file, set or change individual settings, or set or change the BIOS password
-
-$comp = "comp-name-01"
-$cctkVer = "4.7"
-$oldPass = "oldpassword"
-$newPass = "newpassword"
-
-$RECOGNIZED_MODELS = @(
-	@{ Query = "*Precision*5810*"; Model = "Precision-5810"; CctkVer = "4.2" },
-	@{ Query = "*Precision*3420*"; Model = "Precision-3420"; CctkVer = "4.3" },
-	@{ Query = "*Precision*3620*"; Model = "Precision-3620"; CctkVer = "4.3" },
-	@{ Query = "*Precision*3430*"; Model = "Precision-3430"; CctkVer = "4.4" },
-	@{ Query = "*Precision*3630*"; Model = "Precision-3630"; CctkVer = "4.4" },
-	@{ Query = "*Precision*3431*"; Model = "Precision-3431"; CctkVer = "4.4" },
-	@{ Query = "*Precision*3440*"; Model = "Precision-3440"; CctkVer = "4.4" },
-	@{ Query = "*Precision*3450*"; Model = "Precision-3450"; CctkVer = "4.7" },
-	@{ Query = "*Precision*3650*"; Model = "Precision-3650"; CctkVer = "4.7" },
-	@{ Query = "*Precision*3460*"; Model = "Precision-3460"; CctkVer = "4.7" },
-	@{ Query = "*Precision*5820*"; Model = "Precision-5820"; CctkVer = "4.8.0.494" },
-	@{ Query = "*Precision*5860*"; Model = "Precision-5860"; CctkVer = "4.10.1.11" }
-)
-
-$cctkExeSource = "\\engr-wintools\packagedsoftware$\ews-bios-configs\Dell\Command Configure\$($cctkVer)"
-$cctkExeDest = "\\$($comp)\c$\engrit\cctk"
-New-Item -Path "\\$($comp)\c$\engrit" -Name "cctk" -ItemType "Directory" -Force
-Copy-Item -Path $cctkExeSource -Destination $cctkExeDest -Recurse
-Invoke-Command -ComputerName $comp -ArgumentList $pass,$cctkVer -ScriptBlock {
-    param(
-        [string]$OldPass,
-	[string]$NewPass,
-        [string]$CctkVer
-    )
-    $cctkExe = "c:\engrit\cctk\$($CctkVer)\Command Configure\X86_64\cctk.exe"
-    & $cctkExe --setuppwd="$NewPass"
-}
-
-# The above sets the password on a machine that doesn't have it set
-
-# To change a password that's already set, replace
-& $cctkExe --setuppwd="$NewPass"
-# with:
-& $cctkExe --valsetuppwd="$OldPass" --setuppwd="$NewPass"
-
-# To change BIOS settings individually, replace
-& $cctkExe --setuppwd="$NewPass"
-# with:
-& $cctkExe --valsetuppwd="$OldPass" --autoonmn=1
-# See here for BIOS setting names: https://www.dell.com/support/manuals/en-us/command-configure/dellcommandconfigure_rg_4.x/bios-options?guid=guid-44c059be-b76d-4b2f-b8ef-655f736c40ce&lang=en-us
+# Use CCTK to set, explort, or import BIOS settings, change BIOS passwords, etc.
+# This has been made into its own module here: https://github.com/engrit-illinois/Invoke-CCTK
 
 # -----------------------------------------------------------------------------
 
