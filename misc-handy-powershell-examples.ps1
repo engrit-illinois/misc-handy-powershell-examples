@@ -797,9 +797,10 @@ Add-Computer -DomainName "ad.uillinois.edu" -OUPath "OU=Instructional,OU=Desktop
 -Credential "uofi\netid"
 -Credential "uofi\su-netid"
 
-# Post May or Sept. 2023, this still won't work unless you also enable account reuse in the registry (even when you're using the command to create a brand new account).
-# You can use this to quickly create and remove the relevant registry key (until this key is deprecated and ignored, eventually):
+# If you still need to join a machine to an existing object with a different user account,
+# then here is the code to implement the reghack which (for now) overrides the hardening and allows this:
 New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "NetJoinLegacyAccountReuse" -Value 1
+# Remember to undo the reghack afterward:
 Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "NetJoinLegacyAccountReuse"
 
 # If you want to restart the machine immediately afterward, add:
