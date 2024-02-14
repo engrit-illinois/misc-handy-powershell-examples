@@ -1372,3 +1372,18 @@ $newContent | Set-Content $path
 
 # -----------------------------------------------------------------------------
 
+# Test running commands as the system account:
+# Note: you may be slapped by TS Security for this when Crowdstrike reports it.
+
+# From an elevated prompt:
+psexec.exe -s powershell.exe # For v5.1. Use pwsh.exe for v7.
+
+# From a standard prompt:
+Start-Process -FilePath "psexec.exe" -Verb "RunAs" -ArgumentList "-s powershell.exe"
+
+# On remote machine
+Start-Process -FilePath "psexec.exe" -Verb "RunAs" -ArgumentList "\\comp-name-01 -s powershell.exe"
+
+# -----------------------------------------------------------------------------
+
+
