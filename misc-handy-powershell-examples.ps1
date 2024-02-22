@@ -128,7 +128,7 @@ Get-ADComputer -Filter "Name -like 'eh-406b*'" | Select -ExpandProperty Name | F
 
 # Disk cleaning actions
 
-function Clean-TempFiles($ComputerNameQuery) {
+function Clear-TempFiles($ComputerNameQuery) {
     $comps = Get-ADComputer -Filter "name -like '$ComputerNameQuery'" -SearchBase "OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
 	Write-Host "Computers:"
 	$compsString = "`"" + ($comps.Name -join "`",`"") + "`""
@@ -181,7 +181,7 @@ function Clean-TempFiles($ComputerNameQuery) {
 }
 
 # Example:
-Clean-TempFiles "comp-name-*"
+Clear-TempFiles "comp-name-*"
 
 # -----------------------------------------------------------------------------
 
