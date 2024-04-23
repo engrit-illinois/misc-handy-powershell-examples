@@ -1386,4 +1386,16 @@ Start-Process -FilePath "psexec.exe" -Verb "RunAs" -ArgumentList "\\comp-name-01
 
 # -----------------------------------------------------------------------------
 
+# Get-Process doesn't provide user info
+# This code gathers it from WMI and combines it with info from Get-Process
+# https://stackoverflow.com/a/35195953/994622
+# https://devblogs.microsoft.com/scripting/get-process-owner-and-other-info-with-wmi-and-powershell/
+$procs = Get-CimInstance Win32_Process | Where { ($_.ProcessName -eq "pwsh.exe") -or ($_.ProcessName -eq "powershell.exe") }
+$procsWithOwner = $procs | ForEach-Object {
+    $owner = Invoke-CimMethod -InputObject $_ -MethodName "GetOwner" | Select -ExpandProperty "User"
+    $_ | Add-Member -NotePropertyName "Owner" -NotePropertyValue $owner -PassThru
+}
+$procsWithOwner | Select Name,ProcessId,Owner
+
+# -----------------------------------------------------------------------------
 
