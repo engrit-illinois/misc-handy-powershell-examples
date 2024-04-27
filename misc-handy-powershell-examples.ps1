@@ -284,6 +284,9 @@ dsregcmd /leave
 # I renamed the first computer to a 3rd temp name, and then accidentally renamed the second computer to the first computer's original name before the first computer had a chance to complete its rename.
 # The second computer then showed these errors anytime I tried to rename it again, until I used the fix above.
 
+# It's also apparently a potential side effect of the Oct. 2022 domain-join hardening:
+# https://www.reddit.com/r/Intune/comments/yfp1ho/computer_rename/
+
 # -----------------------------------------------------------------------------
 
 # Find GPO named like...
