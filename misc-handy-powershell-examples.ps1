@@ -1402,3 +1402,42 @@ $procsWithOwner | Select Name,ProcessId,Owner
 
 # -----------------------------------------------------------------------------
 
+# Get a report of all user profile folders that exist on a set of machines
+
+$comps = Get-AdComputerName dcl-l520-*,siebl-0403a-*,gelib-057-*
+$data = $comps | ForEach-Object -ThrottleLimit 50 -Parallel {
+	$comp = $_
+	$users = Get-ChildItem -Path "\\$_\c`$\Users"
+	$users | ForEach-Object {
+		$_ | Add-Member -NotePropertyName "Computer" -NotePropertyValue $comp -PassThru
+	}
+	Write-Host "$comp`n    $($users.Name)"
+}
+$ts = Get-Date -Format "FileDateTime"
+$data | Sort "Computer","Name" | Export-CSV -Path "c:\engrit\logs\cbtf-users_$($ts).csv"
+
+# -----------------------------------------------------------------------------
+
+# Delete all user profile folders except given exceptions on a set of machines.
+# Note: this should NOT be used to delete actual profiles, just profile folders. This code is intended for use when orphaned profile folders exist for non-existent profiles.
+
+$comps = Get-AdComputerName siebl-0403a-01 -SearchBase "OU=CBTF,OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
+$comps | ForEach-Object -ThrottleLimit 50 -Parallel {
+	Invoke-Command -ComputerName $_ -ScriptBlock {
+		$profiles = Get-CIMInstance -ClassName "Win32_UserProfile" -OperationTimeoutSec 300
+		$profiles = $profiles | Where { $_.LocalPath -notlike "*$env:SystemRoot*" }
+		$profiles = $profiles | Where { $_.LocalPath -notlike "*mseng3*" }
+		$profiles = $profiles | Where { $_.LocalPath -notlike "*ews-labadm*" }
+		$folders = Get-ChildItem -Path "c:\users"
+		$folders2 = $folders | Where { $_.Name -notlike "*public*" }
+		$folders2 = $folders2 | Where { $_.Name -notlike "*mseng3*" }
+		$folders2 | ForEach-Object {
+			$_ | Remove-Item -Recurse -Force
+		}
+		$folders3 = Get-ChildItem -Path "c:\users"
+		Write-Host "$($env:computername): Profiles: `"$($profiles.count)`", Folders: `"$($folders.count)`", Deletable folders: `"$($folders2.count)`", Folders after deletion: `"$($folders3.count)`""
+	} *>&1
+}
+
+# -----------------------------------------------------------------------------
+
