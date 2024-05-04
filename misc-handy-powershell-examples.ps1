@@ -19,12 +19,8 @@ $comps = Get-ADComputer -Filter { Name -like "gelib-4c-*" }
 
 # ...based on one or more AD name queries
 $queries = "gelib-4c-*","dcl-l426-*","mel-1001-01"
-$searchbase="OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
-$comps = @()
-foreach($query in @($queries)) {
-	$results = Get-ADComputer -SearchBase $searchbase -Filter "name -like `"$query`"" -Properties *
-	$comps += @($results)
-}
+$searchBase = "OU=Instructional,OU=Desktops,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
+$comps = $queries | ForEach-Object { Get-ADComputer -SearchBase $searchBase -Filter "name -like `"$_`"" -Properties "*" }
 
 # ...based on direct membership rules of an MECM collection
 $compNames = Get-CMCollectionDirectMembershipRule -CollectionName "UIUC-ENGR-IS mseng3 Test VMs (direct membership)" | Select -ExpandProperty RuleName | Sort
