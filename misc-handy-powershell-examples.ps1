@@ -1437,3 +1437,11 @@ $comps | ForEach-Object -ThrottleLimit 50 -Parallel {
 
 # -----------------------------------------------------------------------------
 
+# Passing named parameters as arguments to PowerShell.exe process
+# https://stackoverflow.com/questions/76581014/powershell-how-to-give-args-to-a-powershell-script-launched-from-command-line
+# https://stackoverflow.com/questions/56551242/how-to-specify-switch-parameter-when-calling-a-script-from-batch-file
+
+powershell.exe -Command "& \"%~dp0\foo.ps1\" -Name 'abc' -MySwitch:$false"
+
+# -----------------------------------------------------------------------------
+
