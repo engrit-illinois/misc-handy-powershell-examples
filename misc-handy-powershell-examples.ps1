@@ -1058,11 +1058,11 @@ function Test-Function($number) {
 }
 
 # Save function as string variable
-$testfunction = ${function:Test-Function}.ToString()
+$testFunction = ${function:Test-Function}.ToString()
  
-@(1, 2, 3) | | ForEach-Object -Parallel {
+@(1, 2, 3) | ForEach-Object -Parallel {
 	# Recreate function in local parallel scope
-	${function:Test-Function} = $using:testfunction
+	${function:Test-Function} = $using:testFunction
 	
 	# Make sure to also define any parent-scope variables used by the function!
 	$letter = $using:letter
