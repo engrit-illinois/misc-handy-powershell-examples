@@ -1445,3 +1445,89 @@ powershell.exe -Command "& \"%~dp0\foo.ps1\" -Name 'abc' -MySwitch:$false"
 
 # -----------------------------------------------------------------------------
 
+# These functions will log the ancestry of the process running the script.
+# Useful if you need to configure a local firewall to allow communication from a script process, its parents, and the user(s) running those processes
+
+function log($msg) { Write-Host $msg }
+
+function Log-Process($process, $level) {
+	$indent = ""
+	for($i = 0; $i -lt $level; $i += 1) {
+		$indent = "    $indent"
+	}
+	$start = "Process"
+	if($level -gt 0) { $start = "Parent process" }
+	$id = $process.Id
+	$name = $process.Name
+	$desc = $process.Description
+	$path = $process.Path
+	
+	$ownerUser = "<unknown>"
+	$processWmi = Get-CimInstance -Class "Win32_Process" -Filter "ProcessId='$id'"
+	$owner = $processWmi | Invoke-CimMethod -MethodName "GetOwner" -ErrorAction "SilentlyContinue"
+	if($owner) { $ownerUser = $owner | Select -ExpandProperty "User" }
+	
+	$parentId = $processWmi.ParentProcessId
+	$parent = $process.Parent
+	$parentName = "<unknown>"
+	if($parent) { $parentName = $parent.Name }
+	
+	$cmd = "<unknown>"
+	if($process.CommandLine) { $cmd = $process.CommandLine }
+	
+	log "$($indent)$($start) is ID: `"$id`", Name: `"$name`", Description: `"$desc`", Path: `"$path`", Owner: `"$ownerUser`", Parent ID: `"$parentId`", Parent Name: `"$parentName`", CommandLine: $cmd"
+	
+	if($parent) {
+		Log-Process $parent ($level + 1)
+	}
+}
+
+function Log-ProcessWmi($process, $level) {
+	$indent = ""
+	for($i = 0; $i -lt $level; $i += 1) {
+		$indent = "    $indent"
+	}
+	$start = "Process"
+	if($level -gt 0) { $start = "Parent process" }
+	$id = $process.ProcessId
+	$name = $process.ProcessName
+	$desc = $process.Description
+	$path = $process.Path
+	
+	$ownerUser = "<unknown>"
+	$owner = $process | Invoke-CimMethod -MethodName "GetOwner" -ErrorAction "SilentlyContinue"
+	if($owner) { $ownerUser = $owner | Select -ExpandProperty "User" }
+	
+	$parentId = $process.ParentProcessId
+	$parent = Get-CimInstance -Class "Win32_Process" -Filter "ProcessId='$parentId'"
+	$parentName = "<unknown>"
+	if($parent) { $parentName = $parent.Name }
+	
+	$cmd = "<unknown>"
+	if($process.CommandLine) { $cmd = $process.CommandLine }
+	
+	log "$($indent)$($start) is ID: `"$id`", Name: `"$name`", Description: `"$desc`", Path: `"$path`", Owner: `"$ownerUser`", Parent ID: `"$parentId`", Parent Name: `"$parentName`", CommandLine: $cmd"
+	
+	if($parent) {
+		Log-Process $parent ($level + 1)
+	}
+}
+
+function Log-ProcessInfo {
+	$user = whoami
+	log "Running as `"$user`"."
+	
+	log "Logging process info via Get-Process cmdlet..."
+	$process = [System.Diagnostics.Process]::GetCurrentProcess()
+	Log-Process $process 1
+	
+	log "Logging process info via Get-CimInstance cmdlet..."
+	$processWmi = Get-CimInstance -Class "Win32_Process" -Filter "ProcessId='$($process.Id)'"
+	Log-ProcessWmi $processWmi 1
+}
+
+# Usage:
+Log-ProcessInfo
+
+# -----------------------------------------------------------------------------
+
