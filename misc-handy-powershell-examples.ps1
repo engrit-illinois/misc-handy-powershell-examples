@@ -1531,3 +1531,103 @@ Log-ProcessInfo
 
 # -----------------------------------------------------------------------------
 
+# This code will nslookup the IPv4 address of a given domain/subdomain, a given number of times, and report all of the unique IPs that were resolved.
+# Useful for learning the majority of IPs that might be used for an internet service using load distribution, or other IP trickery.
+
+function Resolve-AllIpsOfHostname {
+	param(
+		[string]$Hostname,
+		[int]$TestCount = 60,
+		[int]$TestIntervalSeconds = 1,
+		[switch]$PassThru
+	)
+	
+	function log {
+		param(
+			[string]$Msg,
+			[switch]$NoNewline
+		)
+		$params = @{
+			Object = $Msg
+			NoNewline = $false
+		}
+		if($NoNewline) { $params.NoNewline = $true }
+		Write-Host @params
+	}
+	
+	function Do-Stuff {
+		$allIps = @()
+		
+		log "Polling `"$Hostname`" $TestCount times, once every $TestIntervalSeconds second(s)..."
+		for($i = 0; $i -lt $TestCount; $i += 1) {
+			$attempt = $i + 1
+			log "    Attempt #$($attempt): " -NoNewline
+			$results = $null
+			$results = Resolve-DnsName -Name $Hostname
+			if($results) {
+				$resultsCount = $results.count
+				#log "        $resultsCount results."
+				
+				$attemptIps = @()
+				$results | ForEach-Object {
+					$result = $_
+					if($result.QueryType.ToString() -eq "A") {
+						if($result.IP4Address) {
+							$attemptIps += @($result.IP4Address)
+						}
+					}
+				}
+				if($attemptIps) {
+					$attemptIpsCount = $attemptIps.count
+					if($attemptIpsCount -eq 0) {
+						log "Found IPs, but the count was 0!"
+					}
+					elseif($attemptIpsCount -eq 1) {
+						log $attemptIps
+						$allIps += @($attemptIps)
+					}
+					else {
+						$attemptIpsString = $attemptIps -join ", "
+						log $attemptIpsString
+						$allIps += @($attemptIps)
+					}
+				}
+				else {
+					log "Found no IPs!"
+				}
+			}
+			else {
+				log "No results!"
+			}
+			Start-Sleep -Seconds $TestIntervalSeconds
+		}
+		log "Done polling."
+		
+		if($allIps) {
+			$allIpsCount = $allIps.count
+			$allIpsString = $allIps -join ", "
+			log "`nFound $allIpsCount total IPs: $allIpsString."
+			
+			$uniqueIps = $allIps | Select -Unique
+			$uniqueIpsCount = $uniqueIps.count
+			#$uniqueIpsString = $uniqueIps -join ", "
+			log "`nFound $uniqueIpsCount unique IPs:"
+			$uniqueIps | ForEach-Object { log "    $_" }
+			
+			if($PassThru) {
+				$uniqueIps
+			}
+		}
+		else {
+			log "`nFound no IPs!"
+		}
+	}
+	
+	Do-Stuff
+}
+
+# Usage:
+Resolve-AllIpsOfHostname "dl.dell.com" -TestCount 600
+
+# -----------------------------------------------------------------------------
+
