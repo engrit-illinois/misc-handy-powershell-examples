@@ -1631,3 +1631,30 @@ Resolve-AllIpsOfHostname "dl.dell.com" -TestCount 600
 
 # -----------------------------------------------------------------------------
 
+# This code repeats a Get-NetTCPConnection (i.e. netstat) every second and looks for connections to a specific IP
+# Useful for learning whether a certain action relies on contacting a specific host, which executable is actually performing that communication and which user owns that process
+# Which is useful for creating firewall rules
+
+$ip = "172.22.230.162"
+$timeoutSeconds = 10
+$results = (1..$timeoutSeconds) | ForEach-Object {
+	Write-Host $_
+	$hits = $null
+	$hits = Get-NetTCPConnection -State "Established" -RemoteAddress $ip -ErrorAction "SilentlyContinue"
+	$ts = Get-Date
+	$hits | ForEach-Object {
+		$hit = $_
+		$processId = $hit.OwningProcess
+		$process = Get-Process -Id $processId
+		$hit | Add-Member -NotePropertyName "TimeSeen" -NotePropertyValue $ts
+		$hit | Add-Member -NotePropertyName "Process" -NotePropertyValue $process -PassThru
+	}
+	Start-Sleep -Seconds 1
+}
+
+$results | Select TimeSeen,LocalAddress,LocalPort,RemoteAddress,RemotePort,OwningProcess,{$_.Process.Name},{$_.Process.Path} | Format-Table
+
+# -----------------------------------------------------------------------------
+
+
+
