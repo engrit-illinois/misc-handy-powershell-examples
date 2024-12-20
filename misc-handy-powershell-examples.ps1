@@ -1341,6 +1341,21 @@ $hash4 = $hash3.PSObject.Copy()
 $hash4.bar = "banana"
 Write-Host $hash3.bar # Returns nothing
 
+# As a side note, be aware that while $var.PSObject.Copy() will throw an error when $var is explicitly equal to $null, if $var is equal to the "enumerable null" or "automation null", it will succeed.
+# https://stackoverflow.com/questions/79296217/what-is-the-difference-between-null-and-the-empty-output-of-where-object
+# https://stackoverflow.com/questions/22343187/why-is-an-empty-powershell-pipeline-not-the-same-as-null
+# https://docs.microsoft.com/en-US/dotnet/api/System.Management.Automation.Internal.AutomationNull.Value
+# https://learn.microsoft.com/en-us/powershell/scripting/learn/deep-dives/everything-about-null?view=powershell-7.4
+
+$a = $null # Sets $a explicitly to $null
+$null -eq $a # Returns $true
+$a.PSObject.Copy() # Throws "You cannot call a method on a null-valued expression."
+
+$b = Get-Process | Where-Object { $false } # Sets $b to the "automation null"
+$null -eq $b # Returns $true
+$c = $b.PSObject.Copy() # Succeeds
+$null -eq $c # Returns $false
+
 # -----------------------------------------------------------------------------
 
 # Get product code from MSI without installing app:
