@@ -1342,6 +1342,8 @@ $hash4.bar = "banana"
 Write-Host $hash3.bar # Returns nothing
 
 # As a side note, be aware that while $var.PSObject.Copy() will throw an error when $var is explicitly equal to $null, if $var is equal to the "enumerable null" or "automation null", it will succeed.
+# It may be preferable to use the clone() method for a particular object, should that object type implement it.
+# https://stackoverflow.com/a/79300085/994622
 # https://stackoverflow.com/questions/79296217/what-is-the-difference-between-null-and-the-empty-output-of-where-object
 # https://stackoverflow.com/questions/22343187/why-is-an-empty-powershell-pipeline-not-the-same-as-null
 # https://docs.microsoft.com/en-US/dotnet/api/System.Management.Automation.Internal.AutomationNull.Value
