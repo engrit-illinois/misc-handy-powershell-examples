@@ -1661,7 +1661,7 @@ Resolve-AllIpsOfHostname "dl.dell.com" -TestCount 600
 # -----------------------------------------------------------------------------
 
 # This code repeats a Get-NetTCPConnection (i.e. netstat) every second and looks for connections to a specific IP
-# Useful for learning whether a certain action relies on contacting a specific host, which executable is actually performing that communication and which user owns that process
+# Useful for learning whether a certain action relies on contacting a specific host, which executable is actually performing that communication, and which user owns that process
 # Which is useful for creating firewall rules
 
 $ip = "172.22.230.162"
@@ -1685,5 +1685,49 @@ $results | Select TimeSeen,LocalAddress,LocalPort,RemoteAddress,RemotePort,Ownin
 
 # -----------------------------------------------------------------------------
 
+# Pulls the version of Microsoft Edge from multiple remote computers
+# Note: The "AppxProvisionedPackageVersion" will likely be whatever version the machine had when it was imaged.
+# The other versions should reflect the version of the live, installed app.
 
+$comps = Get-ADComputer -Filter "*" -SearchBase "OU=CBTF,OU=Urbana,DC=ad,DC=uillinois,DC=edu"
+
+$results = $comps | ForEach-Object -ThrottleLimit 50 -Parallel {
+	$comp = $_.Name
+	try {
+		Invoke-Command -ComputerName $comp -ErrorAction "Stop" -ScriptBlock {
+			try {
+				$appxPackage = Get-AppxProvisionedPackage -Online -ErrorAction "Stop" | Where { $_.DisplayName -eq "Microsoft.MicrosoftEdge.Stable" }
+				$exe = Get-ItemProperty "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ErrorAction "Stop"
+				$regItem = Get-Item "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge" -ErrorAction "Stop" | Get-ItemProperty -ErrorAction "Stop"
+			}
+			catch {
+				$err = $_
+				$errMsg = $err.Exception.Message
+			}
+
+			[PSCustomObject]@{
+				ComputerName = $env:ComputerName
+				AppxProvisionedPackageVersion = $appxPackage.Version
+				ExeFileVersion = $exe.VersionInfo.FileVersion
+				ExeProductVersion = $exe.VersionInfo.ProductVersion
+				RegistryDisplayVersion = $regItem.DisplayVersion
+				RegistryVersion = $regItem.Version
+				Error = $errMsg
+			}
+		}
+	}
+	catch {
+		$err = $_
+		$errMsg = $err.Exception.Message
+		
+		[PSCustomObject]@{
+			ComputerName = $comp
+			Error = $errMsg
+		}
+	}
+}
+
+$results | Select -ExcludeProperty PSComputerName,RunspaceId | Sort ComputerName | ft
+
+# -----------------------------------------------------------------------------
 
