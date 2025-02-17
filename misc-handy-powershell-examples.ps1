@@ -1731,3 +1731,29 @@ $results | Select -ExcludeProperty PSComputerName,RunspaceId | Sort ComputerName
 
 # -----------------------------------------------------------------------------
 
+# Using the first-party Microsoft PowerShell SecretStore module to create a local secrets vault
+# Useful for securely storing and conveniently using service account credentials, for example
+# https://learn.microsoft.com/en-us/powershell/utility-modules/secretmanagement/get-started/using-secretstore?view=ps-modules
+
+# Create the vault
+Install-Module Microsoft.PowerShell.SecretManagement
+Install-Module Microsoft.PowerShell.SecretStore
+Import-Module Microsoft.PowerShell.SecretManagement
+Import-Module Microsoft.PowerShell.SecretStore
+Register-SecretVault -Name "MyVault" -ModuleName Microsoft.Powershell.SecretStore -DefaultVault
+
+# Create a secret
+$creds = Get-Credential
+Set-Secret -Name "MyServiceAccount" -Vault "MyVault" -Secret $creds
+
+# List secrets
+Get-SecretInfo
+
+# Retrieve a secret
+Get-Secret -Name "MyServiceAccount"
+
+# Use a secret in-line
+Do-SomethingThatRequiresCredentials -Credential (Get-Secret -Name "MyServiceAccount")
+
+# -----------------------------------------------------------------------------
+
