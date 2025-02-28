@@ -1395,13 +1395,33 @@ Get-MsiProductCode "\\engr-wintools\packagedsoftware$\FreeFlyer\7.4\Installer\Fr
 # Note: the settings.json path may need to be modified, for different versions of Windows Terminal (specifically for the Preview branch)
 
 # Update: It looks like the regex for finding/replacing the necessary lines is no longer working. Need to troubleshoot.
-# The lines to be removed look like this:
-#        {
-#            "command": "paste",
-#            "id": "User.paste",
-#            "keys": "ctrl+v"
-#        },
+# The lines to be removed look like this, and are under the "actions" node:
+<#
+    {
+        "command": "paste",
+        "id": "User.paste",
+        "keys": "ctrl+v"
+    },
+#>
 # The regex is supposed to match everything between the first and third lines above (including the curly brackets with any whitespace between)
+
+# Note: newer version of settings.json seem to separate this between the "actions" node and "keybindings" node, like so:
+<#
+    "actions": 
+    [
+        {
+            "command": "paste",
+            "id": "User.paste"
+        }
+    ],
+    "keybindings": 
+    [
+        {
+            "id": "User.paste",
+            "keys": "ctrl+v"
+        }
+    ]
+#>
 
 $path = "$($env:LocalAppData)\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
 $content = Get-Content $path | Out-String
