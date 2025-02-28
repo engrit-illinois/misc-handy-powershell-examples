@@ -1391,6 +1391,17 @@ Get-MsiProductCode "\\engr-wintools\packagedsoftware$\FreeFlyer\7.4\Installer\Fr
 # -----------------------------------------------------------------------------
 
 # Enable multi-line pasting in Windows Terminal
+# This code edits your terminal's settings.json file and removes some lines, which enables native multi-line pasting (why isn't this default behavior?)
+# Note: the settings.json path may need to be modified, for different versions of Windows Terminal (specifically for the Preview branch)
+
+# Update: It looks like the regex for finding/replacing the necessary lines is no longer working. Need to troubleshoot.
+# The lines to be removed look like this:
+#        {
+#            "command": "paste",
+#            "id": "User.paste",
+#            "keys": "ctrl+v"
+#        },
+# The regex is supposed to match everything between the first and third lines above (including the curly brackets with any whitespace between)
 
 $path = "$($env:LocalAppData)\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
 $content = Get-Content $path | Out-String
