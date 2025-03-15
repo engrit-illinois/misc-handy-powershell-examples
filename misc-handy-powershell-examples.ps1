@@ -830,6 +830,29 @@ ipconfig /flushdns
 
 # -----------------------------------------------------------------------------
 
+# Check to make sure AD DNS names match Windows OS names
+$query = "comp-name-*"
+$comps = Get-ADComputer -Filter "name -like `"$query`""
+Write-Host "Computers: $($comps.Name -join ", ")"
+$comps.Name | ForEach-Object -Parallel {
+	function log($msg) { Write-Host $msg }
+	if(Test-Connection -TargetName $_ -IPv4 -Count 2 -Quiet -TimeoutSeconds 2) {
+		$name = Invoke-Command -ComputerName $_ -ScriptBlock {
+			$env:ComputerName
+		}
+	}
+	else {
+		$err = "$_ did not pong."
+	}
+	[PSCustomObject]@{
+		Comp = $_
+		Name = $name
+		Error = $err
+	}
+} | Sort Comp
+
+# -----------------------------------------------------------------------------
+
 # Get resolution of monitors in a lab
 # https://stackoverflow.com/questions/7967699/get-screen-resolution-using-wmi-powershell-in-windows-7
 $monitors = foreach($int in @(1..39)) {
