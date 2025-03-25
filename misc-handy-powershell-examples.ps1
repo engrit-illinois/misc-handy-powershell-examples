@@ -1857,6 +1857,8 @@ $ous = Get-ADOrganizationalUnit -Filter "*" -SearchBase "OU=Students,OU=Classes,
 $propsToSelect = $propsToSelect | Select -Unique
 # Note that a value of "{}" (i.e. an empty array) is just what AD cmdlets return object types return when selecting non-existent properties from them, for some reason.
 # This just means that there are 0 of that object type under that OU.
+# If there are no columns for a certain type of object (e.g. no "userCount") column, that means that none of the OUs contained any objects of that type.
+# So if a column exists in the output, at least one OU should contain an object of that type.
 $ous | Select $propsToSelect | Sort "DistinguishedName"
 
 # -----------------------------------------------------------------------------
