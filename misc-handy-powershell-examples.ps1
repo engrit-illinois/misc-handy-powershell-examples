@@ -1811,5 +1811,53 @@ Do-SomethingThatRequiresCredentials -Credential (Get-Secret -Name "MyServiceAcco
 
 # -----------------------------------------------------------------------------
 
+# For a given AD OU, return the number of different kinds of AD objects inside the given OU and each immediate sub-OU.
+# Useful for checking whether any unexpected objects exist in a given OU its sub-OUs, in preparation for deleting an entire OU.
+# The output will list one column for each 
 
+# Keep track of which types of objects exist in all of the target OUs
+$propsToSelect = @("DistinguishedName")
+
+# For the parent OU and each immediate sub-OU
+$ous = Get-ADOrganizationalUnit -Filter "*" -SearchBase "OU=Students,OU=Classes,OU=UsersAndGroups,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu" | ForEach-Object {
+	$ou = $_
+	
+	# Get all objects in this OU/sub-OU
+	# Using -SearchScope 1 so as to only look at immediate children
+	# https://learn.microsoft.com/en-us/powershell/module/activedirectory/get-adobject?view=windowsserver2025-ps#-searchscope
+	$objects = Get-ADObject -Filter "*" -SearchScope 1 -SearchBase $ou.DistinguishedName
+	
+	# If there are any objects
+	$objectsCount = 0
+	if($objects) {
+		$objectsCount = @($objects).count
+		
+		# Get an array containing a list of the different unique types of objects that exist
+		$uniqueTypes = $objects | Select -ExpandProperty "ObjectClass" | Select -Unique
+		
+		# For each type of object
+		$uniqueTypes | ForEach-Object {
+			$type = $_
+			
+			# Keep track of which object types exist across all target OUs
+			$typeCountProperty = "$($type)Count"
+			$propsToSelect += @($typeCountProperty)
+			
+			# Keep track of how many of this object type exists in this OU/sub-OU
+			$objectsOfType = $objects | Where { $_.ObjectClass -eq $type }
+			$objectsOfTypeCount = 0
+			if($objectsOfType) { $objectsOfTypeCount = @($objectsOfType).count }
+			$ou | Add-Member -NotePropertyName $typeCountProperty -NotePropertyValue $objectsOfTypeCount -Force
+		}
+	}
+	$ou
+}
+
+# Output results
+$propsToSelect = $propsToSelect | Select -Unique
+# Note that a value of "{}" (i.e. an empty array) is just what AD cmdlets return object types return when selecting non-existent properties from them, for some reason.
+# This just means that there are 0 of that object type under that OU.
+$ous | Select $propsToSelect | Sort "DistinguishedName"
+
+# -----------------------------------------------------------------------------
 
