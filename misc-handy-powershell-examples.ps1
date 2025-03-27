@@ -1863,3 +1863,16 @@ $ous | Select $propsToSelect | Sort "DistinguishedName"
 
 # -----------------------------------------------------------------------------
 
+# Determine whether a network adapter is connected, disconnected, disabled, etc. on multiple machines
+
+$laptops = Get-ADComputerName "cbtf-cart01-*"
+$adapters = $laptops | ForEach-Object -ThrottleLimit 40 -Parallel {
+    Invoke-Command -ComputerName $_ -ScriptBlock {
+        Get-NetAdapter | Select *
+    }
+}
+
+$adapters | Where { $_.InterfaceDescription -eq "Intel(R) Wi-Fi 6 AX201 160MHz" } | Select "PSComputerName","InterfaceDescription","Status" | Sort "PSComputerName"
+
+# -----------------------------------------------------------------------------
+
