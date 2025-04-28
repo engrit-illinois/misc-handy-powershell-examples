@@ -1816,10 +1816,10 @@ Do-SomethingThatRequiresCredentials -Credential (Get-Secret -Name "MyServiceAcco
 # The output will list one column for each 
 
 # Keep track of which types of objects exist in all of the target OUs
-$propsToSelect = @("DistinguishedName")
+$propsToSelect = @("CanonicalName")
 
 # For the parent OU and each immediate sub-OU
-$ous = Get-ADOrganizationalUnit -Filter "*" -SearchBase "OU=Students,OU=Classes,OU=UsersAndGroups,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu" | ForEach-Object {
+$ous = Get-ADOrganizationalUnit -Filter "*" -SearchBase "OU=Students,OU=Classes,OU=UsersAndGroups,OU=Engineering,OU=Urbana,DC=ad,DC=uillinois,DC=edu" -Properties $propsToSelect | ForEach-Object {
 	$ou = $_
 	
 	# Get all objects in this OU/sub-OU
@@ -1859,7 +1859,7 @@ $propsToSelect = $propsToSelect | Select -Unique
 # This just means that there are 0 of that object type under that OU.
 # If there are no columns for a certain type of object (e.g. no "userCount") column, that means that none of the OUs contained any objects of that type.
 # So if a column exists in the output, at least one OU should contain an object of that type.
-$ous | Select $propsToSelect | Sort "DistinguishedName"
+$ous | Select $propsToSelect | Sort "CanonicalName"
 
 # -----------------------------------------------------------------------------
 
