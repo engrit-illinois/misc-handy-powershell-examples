@@ -1876,3 +1876,30 @@ $adapters | Where { $_.InterfaceDescription -eq "Intel(R) Wi-Fi 6 AX201 160MHz" 
 
 # -----------------------------------------------------------------------------
 
+# Various API documentation:
+
+# Lens
+# https://answers.uillinois.edu/search.php?q=lens+api
+# https://github.com/engrit-illinois/Get-LensInfo
+# https://github.com/engrit-illinois/Get-LensObject
+# https://github.com/engrit-illinois/lens-new-api-testing
+
+# Infoblox (IPAM)
+# https://wiki.illinois.edu/wiki/display/ipamdocs/Using+the+IPAM+API
+# https://ipam.illinois.edu/wapidoc/
+# https://ipam.illinois.edu/wapidoc/additional/sample.html
+# https://community.infoblox.com/t5/API-Integration/The-definitive-list-of-REST-examples/m-p/1214/highlight/true#M2
+# https://www.infoblox.com/wp-content/uploads/infoblox-deployment-infoblox-rest-api.pdf
+# https://github.com/engrit-illinois/New-IpamHostRecord
+# https://github.com/engrit-illinois/Set-IpamHostRecord
+# https://github.com/engrit-illinois/Add-MacToIpamIpv4MacFilter
+# https://github.com/engrit-illinois/Get-IpamIpv4MacFilterEntry
+
+# TDX
+# https://github.com/techservicesillinois/SecOps-Powershell-TDXTickets/
+
+# Confluence
+# https://developer.atlassian.com/cloud/confluence/rest/v2/api-group-page/#api-pages-get
+
+# -----------------------------------------------------------------------------
+
