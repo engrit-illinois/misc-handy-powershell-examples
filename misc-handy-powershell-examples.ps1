@@ -6,6 +6,11 @@ Exit
 
 # -----------------------------------------------------------------------------
 
+# Note: this file has examples primarily is for general administrative tasks. For a separate file dedicated to tasks relating to MECM, see:
+# https://github.com/engrit-illinois/org-shared-mecm-deployments/blob/main/org-shared-deployments-misc.ps1
+
+# -----------------------------------------------------------------------------
+
 # Do something remotely on multiple computers, in parallel...
 # https://devblogs.microsoft.com/powershell/powershell-foreach-object-parallel-feature/
 # Note the parallel functionality of ForEach-Object requires PowerShell 7
