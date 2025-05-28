@@ -828,7 +828,7 @@ Register-DnsClient
 # Here's a version you can run remotely, using the machine's IP (or regular DNS hostname) since the AD DNS name may not work:
 # https://techibee.com/powershell/force-dns-registration-on-remote-computers-using-powershell/2617
 $comp = "dcl-l416-05.ews.illinois.edu"
-([WMIClass]"\\$comp\ROOT\CImv2:Win32_Process").Create("cmd.exe /c ipconfig /registerdns")
+([WMIClass]"\\$comp\ROOT\CIMv2:Win32_Process").Create("cmd.exe /c ipconfig /registerdns")
 
 # After doing the above, flush your local DNS cache (requires elevation):
 ipconfig /flushdns
