@@ -1181,24 +1181,6 @@ Get-Out "*name*"
 
 # -----------------------------------------------------------------------------
 
-# Get Lens info for multiple machines
-
-# Lens creds
-$creds = Get-Credential "mseng3"
-# Computer name query
-$query = "eh-406b*-*"
-
-$comps = Get-ADComputer -SearchBase $searchbase -Filter "name -like `"$query`"" -Properties * | Select -ExpandProperty Name
-$results = $comps | ForEach-Object -Parallel {
-    # See: https://github.com/engrit-illinois/Get-LensInfo
-    Get-LensInfo -ComputerName $_ -Credential $using:creds
-}
-
-# e.g. to select just the Name and switch of each machine:
-$results | Select Name,Switch | Sort Name
-
-# -----------------------------------------------------------------------------
-
 # Demonstrate the Win10 problem which prevents identifying "old" user profiles for the purposes of deletion
 # See this link for details about the problem: https://techcommunity.microsoft.com/t5/windows-deployment/issue-with-date-modified-for-ntuser-dat/m-p/102438
 Get-ChildItem -Path "c:\users\*\ntuser.dat" -Hidden | Select "FullName","CreationTime","LastWriteTime","LastAccessTime" -First 50
