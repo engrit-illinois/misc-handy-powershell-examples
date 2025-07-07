@@ -85,6 +85,17 @@ $lnks | ForEach-Object {
 
 # -----------------------------------------------------------------------------
 
+# Change the icon of an existing shortcut to use of the icons indexed in SHELL32.DLL
+# In this example, the "297" is the index of the desired icon stored within SHELL32.DLL
+$shortcutPath = "C:\Users\Public\Desktop\Shortcut.lnk"
+$iconPath = "C:\Windows\System32\shell32.dll,297"
+$shell = New-Object -ComObject WScript.Shell
+$shortcut = $shell.CreateShortcut($shortcutPath)
+$shortcut.IconLocation = $iconPath
+$Shortcut.Save()
+
+# -----------------------------------------------------------------------------
+
 # Create large dummy files
 # https://www.windows-commandline.com/how-to-create-large-dummy-file/
 Invoke-Command -ComputerName "computer-name" -ScriptBlock { fsutil file createnew c:\bigtestfile.txt 100000000000 } #100GB
