@@ -1453,7 +1453,7 @@ $newContent | Set-Content $path
 # -----------------------------------------------------------------------------
 
 # Test running commands as the system account:
-# Note: you may be slapped by TS Security for this when Crowdstrike reports it.
+# Note: Crowdstrike will detect this as a threat and generate a detection event, and TS Security may poke you about it.
 
 # From an elevated prompt:
 psexec.exe -s powershell.exe # For v5.1. Use pwsh.exe for v7.
