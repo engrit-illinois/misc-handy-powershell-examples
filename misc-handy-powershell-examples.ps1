@@ -842,7 +842,9 @@ $comp = "dcl-l416-05.ews.illinois.edu"
 ([WMIClass]"\\$comp\ROOT\CIMv2:Win32_Process").Create("cmd.exe /c ipconfig /registerdns")
 
 # After doing the above, flush your local DNS cache (requires elevation):
-ipconfig /flushdns
+ipconfig /flushdns # requires elevation
+# or
+Clear-DnsClientCache # doesn't require elevation
 
 # -----------------------------------------------------------------------------
 
