@@ -550,6 +550,8 @@ foreach($item in $targetItems) {
 
 # -----------------------------------------------------------------------------
 
+<# Code in this section is AHK script code
+
 ; # Quick and dirty AHK script to automate removing credential entries from the Windows Credential Manager GUI.
 ; # Mostly because the cmdkey.exe executable (which can properly automate this), doesn't support deleting entries with special characters like parentheses and combinations of hyphens and spaces.
 ; # https://stackoverflow.com/questions/51565300/cmdkey-delete-credentials-with-dashes-and-spaces-on-the-name
@@ -602,6 +604,8 @@ ReloadScript:
 	Reload
 
 ; EOF
+
+#> # End of AHK script section
 
 # -----------------------------------------------------------------------------
 
