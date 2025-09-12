@@ -1907,3 +1907,22 @@ $adapters | Where { $_.InterfaceDescription -eq "Intel(R) Wi-Fi 6 AX201 160MHz" 
 
 # -----------------------------------------------------------------------------
 
+# In our environment access to certain AD user account attributes is restricted to IT Pros and folks who have taken FERPA training, and usually access is granted only to separate SU accounts.
+# This is a function that can be used in various modules that require access to these restricted attributes, in order to throw a sane error if the user running the module doesn't have the appropriate access.
+# Otherwise it's often difficult to programmatically determine whether those attributes are hidden from the current user, or if they are just legitimately empty.
+# The code below has been abstracted and sanitized a bit to avoid disclosing information specific to the author's environment.
+
+$RESTRICTED_ACCESS_GROUP = "restricted-access-group"
+function Validate-SuAccount {
+	$user = (whoami).split("\")[1]
+	log "Validating account permissions for `"$user`"..."
+	# Note this test will not be reliable if the actual result from this Get-ADGroupMember call exceeds 5000 members, because of https://stackoverflow.com/a/46079714/994622
+	# At the time of writing this code, the result count in our environment is only about 1/3 of that. Barring drastic changes, there's no reason to expect a 3-fold increase in this number.
+	$restrictedAccessGroupMembers = Get-ADGroupMember -Identity $RESTRICTED_ACCESS_GROUP -Recursive | Select -ExpandProperty "name"
+	if($user -notin $restrictedAccessGroupMembers) {
+		Throw "The user `"$user`" was not found in the `"$RESTRICTED_ACCESS_GROUP`" AD group, which grants permission to restricted user attributes. Please run this module as an account which is a member of this group."
+	}
+}
+
+# -----------------------------------------------------------------------------
+
