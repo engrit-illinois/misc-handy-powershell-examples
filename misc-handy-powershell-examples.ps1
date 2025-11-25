@@ -1419,41 +1419,41 @@ Get-MsiProductCode "\\engr-wintools\packagedsoftware$\FreeFlyer\7.4\Installer\Fr
 
 # Enable multi-line pasting in Windows Terminal
 # This code edits your terminal's settings.json file and removes some lines, which enables native multi-line pasting (why isn't this default behavior?)
-# Note: the settings.json path may need to be modified, for different versions of Windows Terminal (specifically for the Preview branch)
 
-# Update: It looks like the regex for finding/replacing the necessary lines is no longer working. Need to troubleshoot.
-# The lines to be removed look like this, and are under the "actions" node:
-<#
-    {
-        "command": "paste",
-        "id": "User.paste",
-        "keys": "ctrl+v"
-    },
-#>
-# The regex is supposed to match everything between the first and third lines above (including the curly brackets with any whitespace between)
+# The only line which needs commented out is the `"keys": "ctrl+v"` line.
+# The overall syntax of the settings.json file has changed over the years. This is accurate as of 2025-11-25 for Windows Terminal production branch, version 1.23.12811.0.
 
-# Note: newer version of settings.json seem to separate this between the "actions" node and "keybindings" node, like so:
 <#
-    "actions": 
+"keybindings": 
     [
         {
-            "command": "paste",
-            "id": "User.paste"
+            "id": "Terminal.CopyToClipboard",
+            "keys": "ctrl+c"
+        },
+        {
+            "id": "Terminal.FindText",
+            "keys": "ctrl+shift+f"
+        },
+        {
+            "id": "Terminal.PasteFromClipboard",
+            "keys": "ctrl+v"
+        },
+        {
+            "id": "Terminal.DuplicatePaneAuto",
+            "keys": "alt+shift+d"
         }
     ],
-    "keybindings": 
-    [
-        {
-            "id": "User.paste",
-            "keys": "ctrl+v"
-        }
-    ]
 #>
 
+# The settings.json path may need to be modified for different versions of Windows Terminal (specifically for the Preview branch)
 $path = "$($env:LocalAppData)\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+# Get the content of the settings.json file
 $content = Get-Content $path | Out-String
-$regex = '{\s*"command": "paste",\s*"keys": "ctrl\+v"\s*},\s*'
-$newContent = $content -replace $regex,""
+# Insert commenting characters before the target line
+$target = '"keys": "ctrl+v"'
+$replacement = "//$target"
+$newContent = $content.Replace($target, $replacement)
+# Overwrite the settings.json file with the modified content
 $newContent | Set-Content $path
 
 # -----------------------------------------------------------------------------
