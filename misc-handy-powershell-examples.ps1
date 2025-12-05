@@ -1419,6 +1419,7 @@ Get-MsiProductCode "\\engr-wintools\packagedsoftware$\FreeFlyer\7.4\Installer\Fr
 
 # Enable multi-line pasting in Windows Terminal
 # This code edits your terminal's settings.json file and removes some lines, which enables native multi-line pasting (why isn't this default behavior?)
+# https://stackoverflow.com/a/79600889/994622
 
 # The only line which needs commented out is the `"keys": "ctrl+v"` line.
 # The overall syntax of the settings.json file has changed over the years. This is accurate as of 2025-11-25 for Windows Terminal production branch, version 1.23.12811.0.
