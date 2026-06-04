@@ -1417,7 +1417,7 @@ Get-MsiProductCode "\\engr-wintools\packagedsoftware$\FreeFlyer\7.4\Installer\Fr
 
 # -----------------------------------------------------------------------------
 
-# Enable multi-line pasting in Windows Terminal
+# Enable multi-line pasting in Windows Terminal (for searchability: multiline, multi line)
 # This code edits your terminal's settings.json file and removes some lines, which enables native multi-line pasting (why isn't this default behavior?)
 # https://stackoverflow.com/a/79600889/994622
 
