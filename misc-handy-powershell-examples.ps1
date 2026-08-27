@@ -247,17 +247,18 @@ foreach($int in @(1..10)) {
 # -----------------------------------------------------------------------------
 
 # Rename a single computer and immediately restart
+# Remove the Restart-Computer line to not restart
 $creds = Get-Credential "uofi\su-netid"
-Invoke-Command -ComputerName "SIEBL-4107-01" -ArgumentList $creds -ScriptBlock {
+Invoke-Command -ComputerName "ENGR-100-01" -ArgumentList $creds -ScriptBlock {
     param($creds)
-    Rename-Computer -NewName "NCSA-1104-01" -DomainCredential $creds
+    Rename-Computer -NewName "ENGR-999-01" -DomainCredential $creds
     Restart-Computer
 }
 
 # -----------------------------------------------------------------------------
 
-# Rename multiple computers and immediately restart them
-# Remove the -Restart parameter to not restart
+# Rename multiple computers, changing their prefix and retaining their number suffix, and immediately restart them
+# Remove the Restart-Computer line to not restart
 # e.g. rename ENGR-100-01 through ENGR-100-10 to ENGR-999-01 through ENGR-999-10
 $remoteCreds = Get-Credential -Message "Enter creds for invoking commands on remote machines" -UserName "uofi\netid"
 $renameCreds = Get-Credential -Message "Enter creds for renaming remote machines" -UserName "uofi\su-netid"
